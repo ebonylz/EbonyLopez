@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Analysis Assignment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-dark: #32006e;
+    --purple-mid:  #4b2e83;
+    --lavender:    #c5b4e3;
+    --gold:        #85754d;
+    --gold-light:  #b7a57a;
+    --gold-pale:   #f0ead8;
+
+    /* Page colors — mostly neutral, gold accents */
+    --ink:    #1c1c1c;
+    --paper:  #fdfcf9;
+    --aged:   #f6f2e8;
+    --muted:  #6b6457;
+    --rule:   #ddd5c0;
+    --shadow: rgba(28,28,28,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 300;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* Subtle warm line texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 31px,
+        rgba(133,117,77,0.05) 31px,
+        rgba(133,117,77,0.05) 32px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Sidebar nav — purple zone */
+  nav {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 220px;
+    background: var(--purple-dark);
+    padding: 2.5rem 1.5rem;
+    z-index: 100;
+    overflow-y: auto;
+    border-right: 3px solid var(--gold);
+  }
+
+  nav .nav-logo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold-light);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(183,165,122,0.3);
+  }
+
+  nav ul { list-style: none; }
+  nav ul li { margin-bottom: 0.15rem; }
+
+  nav ul li a {
+    display: block;
+    color: rgba(255,255,255,0.55);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.6rem;
+    border-radius: 2px;
+    transition: all 0.2s;
+    line-height: 1.4;
+  }
+
+  nav ul li a:hover,
+  nav ul li a.active {
+    color: var(--gold-light);
+    background: rgba(183,165,122,0.12);
+  }
+
+  nav ul li a .step-tag {
+    display: block;
+    color: var(--lavender);
+    font-size: 0.58rem;
+    margin-bottom: 0.1rem;
+  }
+
+  nav ul li.divider {
+    height: 1px;
+    background: rgba(183,165,122,0.2);
+    margin: 0.8rem 0;
+  }
+
+  /* Main content */
+  main {
+    margin-left: 220px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Section base */
+  .section {
+    padding: 4rem 4rem 4rem 5rem;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+    animation: fadeIn 0.6s ease both;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section number / label */
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-label .step-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: white;
+    padding: 0.1rem 0.5rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    margin-right: 0.5rem;
+    border-radius: 1px;
+  }
+
+  /* Headings */
+  h1, h2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  h2 {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    color: var(--ink);
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin: 2rem 0 0.75rem;
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 1.05rem;
+    color: #3a3530;
+    max-width: 100%;
+    margin-bottom: 1.2rem;
+  }
+
+  /* Hero — dark ink, not purple */
+  #intro {
+    background: #1a1612;
+    padding: 5rem 4rem 5rem 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #intro::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 500px; height: 500px;
+    border: 60px solid rgba(183,165,122,0.15);
+    border-radius: 50%;
+  }
+
+  #intro::after {
+    content: '';
+    position: absolute;
+    bottom: -50px; left: -50px;
+    width: 300px; height: 300px;
+    border: 40px solid rgba(183,165,122,0.08);
+    border-radius: 50%;
+  }
+
+  #intro .section-label { color: rgba(183,165,122,0.6); }
+
+  #intro h1 {
+    color: #fff;
+    font-style: italic;
+    max-width: 100%;
+  }
+
+  #intro h1 span { color: var(--gold-light); font-style: normal; }
+
+  #intro .intro-meta {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(183,165,122,0.25);
+    flex-wrap: wrap;
+  }
+
+  .meta-item label {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(183,165,122,0.6);
+    margin-bottom: 0.25rem;
+  }
+
+  .meta-item span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.9);
+  }
+
+  #intro p { color: rgba(255,255,255,0.65); max-width: 100%; margin-top: 1.5rem; }
+
+  /* Alternating backgrounds — warm neutrals only */
+  .section:nth-child(even) { background: var(--aged); }
+  .section:nth-child(odd):not(#intro) { background: var(--paper); }
+
+  /* Step sections — subtle gold left border */
+  .section.is-step {
+    border-left: 4px solid var(--gold-light);
+  }
+
+  .content-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 2rem 2.5rem;
+    max-width: 100%;
+    margin: 2rem 0;
+    box-shadow: 4px 4px 0 var(--rule);
+    position: relative;
+  }
+
+  .content-card::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -0.75rem; left: 1.5rem;
+    background: var(--gold);
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    padding: 0.15rem 0.6rem;
+    text-transform: uppercase;
+  }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1.5rem 0;
+    max-width: 100%;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    min-width: 600px;
+  }
+
+  thead tr {
+    background: var(--gold);
+    color: white;
+  }
+
+  thead th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--rule);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: rgba(139,26,26,0.04); }
+
+  tbody td {
+    padding: 0.65rem 1rem;
+    color: var(--ink);
+  }
+
+  /* Lifecycle diagram */
+  .lifecycle {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 100%;
+    margin: 2.5rem 0;
+    position: relative;
+  }
+
+  .lifecycle-item {
+    display: flex;
+    align-items: stretch;
+    gap: 1.5rem;
+    position: relative;
+  }
+
+  .lifecycle-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 40px;
+  }
+
+  .lifecycle-dot {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .lifecycle-line {
+    flex: 1;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--rule));
+    margin: 0 auto;
+  }
+
+  .lifecycle-content {
+    flex: 1;
+    padding: 0.25rem 0 2rem;
+  }
+
+  .lifecycle-content h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .lifecycle-content p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Visualization placeholder */
+  .viz-placeholder {
+    background: var(--aged);
+    border: 2px dashed var(--rule);
+    border-radius: 2px;
+    height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+    max-width: 100%;
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+
+  .viz-placeholder:hover { border-color: var(--accent); }
+
+  .viz-placeholder .viz-icon {
+    font-size: 2rem;
+    opacity: 0.3;
+  }
+
+  .viz-placeholder span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* Criteria grid */
+  .criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-width: 100%;
+    margin: 1.5rem 0;
+  }
+
+  .criteria-item {
+    background: white;
+    border: 1px solid var(--rule);
+    padding: 1.25rem;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .criteria-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold-light);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .criteria-item:hover::after { transform: scaleX(1); }
+
+  .criteria-item .criteria-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+
+  .criteria-item .criteria-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Recommendation list */
+  .rec-list {
+    list-style: none;
+    max-width: 100%;
+    margin: 1.5rem 0;
+  }
+
+  .rec-list li {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: flex-start;
+  }
+
+  .rec-list li .rec-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--gold);
+    font-weight: 500;
+    padding-top: 0.15rem;
+    flex-shrink: 0;
+    width: 28px;
+  }
+
+  .rec-list li .rec-text {
+    font-size: 0.95rem;
+    color: #2a1f45;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* References */
+  .ref-list {
+    list-style: none;
+    max-width: 100%;
+    counter-reset: ref;
+  }
+
+  .ref-list li {
+    counter-increment: ref;
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .ref-list li::before {
+    content: "[" counter(ref) "]";
+    color: var(--gold);
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  /* Footer strip */
+  .section-footer {
+    position: absolute;
+    bottom: 1.5rem; right: 2rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--rule);
+    text-transform: uppercase;
+  }
+
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--purple-dark); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+
+
+  @media (max-width: 1100px) {
+    .section, #intro { padding: 3rem 3rem 3rem 3.5rem; }
+    p, .content-card, .viz-placeholder { max-width: 100%; }
+  }
+
+  @media (max-width: 900px) {
+    nav { width: 180px; }
+    main { margin-left: 180px; }
+    .section, #intro { padding: 3rem 2rem 3rem 2.5rem; }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.6rem; }
+  }
+
+  @media (max-width: 640px) {
+    nav { display: none; }
+    main { margin-left: 0; }
+    .section, #intro { padding: 2.5rem 1.25rem 4rem; }
+    h1 { font-size: 1.7rem; }
+    h2 { font-size: 1.4rem; }
+    .intro-meta { gap: 1.5rem; }
+    .criteria-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-footer { right: 1.25rem; bottom: 1rem; }
+    .content-card { padding: 1.5rem 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar Navigation -->
+<nav id="sidebar">
+  <div class="nav-logo">Assignment<br>Navigator</div>
+  <ul>
+    <li><a href="#intro">Introduction</a></li>
+    <li><a href="#dataset">Dataset Overview</a></li>
+    <li class="divider"></li>
+    <li><a href="#critical-review"><span class="step-tag">Step 1</span>Critical Review</a></li>
+    <li><a href="#lifecycle"><span class="step-tag">Step 2</span>Lifecycle Diagram</a></li>
+    <li><a href="#visualizations"><span class="step-tag">Step 3</span>Visualizations</a></li>
+    <li><a href="#evaluation"><span class="step-tag">Step 4</span>Evaluation</a></li>
+    <li class="divider"></li>
+    <li><a href="#recommendations">Recommendations</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#references">References</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- INTRO -->
+  <section class="section" id="intro">
+    <div class="section-label">Project 1 · Public Data Audit</div>
+    <h1><span>Analysis of</span><br>SPD Arrest Data</h1>
+    <p>This project critically examines the SPD Arrest Data from the City of Seattle Open Data Portal — a public dataset containing arrest reports filed by the Seattle Police Department. Rather than using the data to tell a story about arrests, this audit evaluates how the data is compiled, where its limitations lie, and what those limitations mean for how it can be responsibly used and interpreted.</p>
+    <div class="intro-meta">
+      <div class="meta-item"><label>Student</label><span>Ebony Lopez</span></div>
+      <div class="meta-item"><label>Course</label><span>B DATA 497</span></div>
+      <div class="meta-item"><label>Date</label><span>April 2026</span></div>
+    </div>
+  </section>
+
+  <!-- DATASET OVERVIEW -->
+  <section class="section" id="dataset">
+    <div class="section-label">Section 01</div>
+    <h2>Dataset Overview</h2>
+    <p>The <strong>SPD Arrest Data</strong> is sourced from the City of Seattle Open Data Portal and contains records of arrest reports filed by the Seattle Police Department. Each row represents a single arrest report, covering subject demographics, officer characteristics, offense type, precinct location, use of force indicators, and date of arrest.</p>
+
+    <h3>Key Attributes</h3>
+    <div class="table-wrap"><table>
+      <thead>
+        <tr>
+          <th>Attribute</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Example Values</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Subject Race</td>
+          <td>Categorical</td>
+          <td>Officer-recorded race of the arrested subject; does not include a Hispanic category (unlike the officer race field)</td>
+          <td>White, Black or African American, Asian, American Indian or Alaska Native, Native Hawaiian or Other Pacific Islander, Unknown, −</td>
+        </tr>
+        <tr>
+          <td>Subject Age Range</td>
+          <td>Categorical (ordinal)</td>
+          <td>Age range of the arrested subject at time of arrest, recorded in binned brackets rather than exact age</td>
+          <td>1 − 17, 18 − 25, 26 − 35, 36 − 45, 46 − 55, 56 and Above, −</td>
+        </tr>
+        <tr>
+          <td>Subject Gender</td>
+          <td>Categorical</td>
+          <td>Gender of the arrested subject; includes extended categories beyond binary options</td>
+          <td>Male, Female, Gender Diverse (gender non-conforming and/or transgender), Unknown, −</td>
+        </tr>
+        <tr>
+          <td>Officer Race</td>
+          <td>Categorical</td>
+          <td>Self-reported race of the arresting officer; includes Hispanic as a distinct category unlike the subject race field</td>
+          <td>White, Hispanic, Black or African American, Asian, American Indian or Alaska Native, Two or More Races, Declined to Answer, Unknown</td>
+        </tr>
+        <tr>
+          <td>Officer Age</td>
+          <td>Numerical</td>
+          <td>Age of the arresting officer in years; −1 used as a placeholder for missing or unknown values</td>
+          <td>21, 28, 34, 45, −1 (placeholder)</td>
+        </tr>
+        <tr>
+          <td>Officer Gender</td>
+          <td>Categorical</td>
+          <td>Gender of the arresting officer</td>
+          <td>Male, Female, Non-Specified</td>
+        </tr>
+        <tr>
+          <td>Precinct</td>
+          <td>Categorical</td>
+          <td>Seattle Police precinct where the arrest occurred; includes anomalous values indicating data entry or system errors</td>
+          <td>North, South, East, West, SouthWest, OOJ, FK ERROR</td>
+        </tr>
+        <tr>
+          <td>Arrest Type</td>
+          <td>Categorical</td>
+          <td>Classification of how the arrest was processed or resolved</td>
+          <td>Follow Up Arrest-Booked, Warrant / Detainer-Booked, Identify and Release-Not Booked, LEAD Diversion, CSC/CDF, Arrest − Declined at Jail</td>
+        </tr>
+        <tr>
+          <td>NIBRS Description</td>
+          <td>Categorical</td>
+          <td>National Incident-Based Reporting System offense category assigned to the arrest</td>
+          <td>Shoplifting, Drug/Narcotic Violations, Aggravated Assault, All Other Offenses, Arson, −</td>
+        </tr>
+        <tr>
+          <td>Force Involved</td>
+          <td>Categorical (binary)</td>
+          <td>Whether use of force occurred during the arrest; definition of "force" is not provided in the dataset</td>
+          <td>Y, N</td>
+        </tr>
+        <tr>
+          <td>Crisis Involved</td>
+          <td>Categorical (binary)</td>
+          <td>Whether the arrest involved a crisis situation (e.g., mental health crisis)</td>
+          <td>Y, N</td>
+        </tr>
+        <tr>
+          <td>Arrest Occurred Date/Time</td>
+          <td>Date/Time</td>
+          <td>Date and time when the arrest took place</td>
+          <td>2019 May 11 03:40:00 PM</td>
+        </tr>
+        <tr>
+          <td>Arrest Reported Date/Time</td>
+          <td>Date/Time</td>
+          <td>Date and time when the arrest was entered into the reporting system; often later than the occurred time</td>
+          <td>2019 May 11 05:04:30 PM</td>
+        </tr>
+        <tr>
+          <td>Latitude / Longitude</td>
+          <td>Numerical (geographic)</td>
+          <td>Geographic coordinates of the arrest location; −1, −1 used as placeholder for missing location data</td>
+          <td>47.6113, −122.3373 (valid); −1, −1 (missing)</td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <div class="content-card" data-label="Dataset Stats">
+      <p><strong>Source:</strong> City of Seattle Open Data Portal — Seattle Police Department<br>
+      <strong>Format:</strong> CSV (tabular, one row per arrest report)<br>
+      <strong>Structure:</strong> Categorical, numerical, and temporal variables<br>
+      <strong>Missing Values:</strong> "Unknown," blanks, and "−" used inconsistently across several columns; invalid coordinate values (−1, −1) present in location fields</p>
+    </div>
+    <div class="section-footer">Dataset Overview</div>
+  </section>
+
+  <!-- CRITICAL REVIEW (Step 1) -->
+  <section class="section is-step" id="critical-review">
+    <div class="section-label"><span class="step-badge">Step 1</span>Critical Analysis</div>
+    <h2>Critical Review</h2>
+
+    <h3>Dataset Basics</h3>
+    <p>The dataset used in this analysis is the <strong>SPD Arrest Data</strong> from the City of Seattle Open Data Portal. It includes records of arrest reports made by the Seattle Police Department and contains variables such as subject demographics (race, age, gender), officer characteristics, offense type, precinct, use of force indicators, and date. The dataset focuses on reported arrests rather than confirmed charges or convictions. Keywords for this dataset include policing, arrests, demographics, public safety, race, age, and use of force.</p>
+
+    <h3>Dataset Origins</h3>
+    <p>The data is created and provided by the Seattle Police Department and shared through the City of Seattle's Open Data Portal. Since it comes directly from SPD, it might seem reliable because they collect the information. At the same time, there are still questions about how reliable data from government agencies really are, especially when they reflect on their own practices. The way information is recorded, categorized, or shared can shape how those practices are perceived, whether intentionally or not. Because of this, the dataset should not be treated as completely neutral, and it is important to think critically about how the data was collected and what might be missing.</p>
+    <p>This is even more important in the broader context. The Seattle Police Department was placed under a federal consent decree in 2012 after a U.S. Department of Justice investigation found concerns about use of force and biased policing (City of Seattle, n.d.; U.S. Department of Justice, 2011). That shows the data is coming from an institution that has already been reviewed and required to make changes. As a result, the dataset does not represent only arrest records — it also reflects the systems and decisions behind how that information is collected and reported.</p>
+
+    <h3>Dataset Circulation</h3>
+    <p>The dataset is publicly available through the Seattle Open Data Portal, where anyone can download and use it. The data is likely collected by officers at the time of arrest and entered into internal reporting systems. However, the dataset does not clearly explain the exact process used to record variables such as race or use of force, which makes it harder to assess how consistent the data are across records. It is also not always clear how often the dataset is updated, so it is difficult to know how current it is. Overall, while the dataset is easy to access, there are still gaps in how the data is produced and maintained, which affect its trustworthiness.</p>
+
+    <h3>Data File — High Level</h3>
+    <p>The dataset is organized so that each row corresponds to an arrest report and each column corresponds to a variable. Some of the main variables include subject race, subject age, gender, officer race, precinct, offense type, whether force was involved, and the date of the arrest. It includes different types of data: categorical (race, gender, precinct), numerical (age), and time-based (date). Overall, the structure is clear and easy to follow. The consistent formatting suggests that data may have been entered through dropdown menus or a standardized system.</p>
+
+    <h3>Data File — Close Reading</h3>
+    <p>Looking more closely at the dataset, there are a few inconsistencies that make it harder to work with. Many columns include values such as "Unknown," blanks, or "−," which would all need to be cleaned before any real analysis. In the subject race and subject gender columns, both "Unknown" and "−" show up, but there is no explanation for what the difference is (if there even is one). Because of that, you have to make assumptions when cleaning the data, which is not ideal.</p>
+    <p>There are also some unusual numerical values. Some officer badge numbers are negative, which does not make sense since badge numbers should be positive. Those same records also tend to have other missing or unclear fields, suggesting they are placeholders or anonymized entries. The location data has a similar issue — some records list coordinates as −1, −1, which are not real locations, suggesting missing data is being filled in with placeholder values rather than clearly labeled.</p>
+    <p>One of the biggest issues is how race is recorded. The subject race column does not include a Hispanic or "Two or More Races" category, while the officer race column does. As a result, it is unclear how those individuals are categorized on the subject side, which makes it harder to compare the two variables directly. Overall, the dataset is still usable, but it requires cleaning and judgment calls — and being transparent about those choices matters.</p>
+
+    <div class="content-card" data-label="Key Issues">
+      <p><strong>Missing Hispanic category:</strong> The subject race column does not include a Hispanic category, while the officer race column does. This makes it impossible to directly compare subject and officer race distributions, and means an entire group is effectively missing from subject-level analysis.</p>
+      <p><strong>Negative badge numbers:</strong> Some officer badge numbers are recorded as negative values. These records are often associated with missing or unclear information in other fields, suggesting placeholder values, anonymized records, or data entry errors.</p>
+      <p><strong>Invalid coordinates:</strong> Location variables such as longitude and latitude sometimes contain values like −1, −1, which are not valid geographic coordinates — further evidence of undocumented placeholder values for missing data.</p>
+      <p><strong>Undefined "Force Involved":</strong> The Force Involved variable is coded as "Y" or "N" with no missing values, suggesting it is standardized. However, the dataset does not define what qualifies as "force," making it unclear whether this refers to minor physical contact or something more serious — which limits how the variable can be interpreted or used for accountability analysis.</p>
+    </div>
+
+    <h3>Dataset Purpose and "Narrative"</h3>
+    <p>The dataset seems to be meant to document arrest activity and make that information available to the public. It is likely intended for researchers, policymakers, journalists, and anyone interested in policing data. At the same time, it is important to remember that this dataset reflects arrests, not actual crime rates. It says more about policing practices than it does about overall criminal activity. That distinction matters, since it directly shapes the story the data tells. How variables are recorded and categorized can also influence how people interpret the data and the conclusions they draw.</p>
+
+    <h3>Representation (Social and Cultural Context)</h3>
+    <p>The dataset consists of people who have been arrested, reflecting how policing is carried out across different communities. There is a clear difference between who created the data (law enforcement) and who the data is about (members of the public), which can introduce bias. Certain groups may be over- or under-represented depending on how policing is done in different areas. The lack of clear racial categories, especially for Hispanic individuals, raises concerns about how accurately different groups are represented. As a result, the dataset may reinforce certain assumptions if not analyzed carefully.</p>
+
+    <h3>Accessibility</h3>
+    <p>The dataset is technically accessible since it is publicly available online, but it is not very user-friendly without some experience working with data. It requires cleaning and a degree of technical skill to use effectively. For a general audience, this creates a barrier — most people would not be able to interpret the raw data without additional tools or explanation.</p>
+
+    <h3>Missing Data</h3>
+    <p>There are missing values throughout this dataset. Many entries include "Unknown," "−," or placeholder values such as −1, which limit the analysis that can be done. There are also important types of information that are completely absent:</p>
+    <ul style="margin: 1rem 0 1rem 1.5rem; line-height: 2;">
+      <li>The dataset does not show whether an arrest led to a charge or conviction, so it is not possible to understand outcomes.</li>
+      <li>It does not show repeat arrests of the same individual, which could affect how patterns are interpreted.</li>
+      <li>It does not distinguish between different types of arrests, such as whether someone was cited or booked.</li>
+    </ul>
+
+    <div class="section-footer">Step 1 — Critical Review</div>
+  </section>
+
+  <!-- LIFECYCLE DIAGRAM (Step 2) -->
+  <section class="section is-step" id="lifecycle">
+    <div class="section-label"><span class="step-badge">Step 2</span>Data Lifecycle</div>
+    <h2>Lifecycle Diagram</h2>
+    <p>The diagram below traces the SPD Arrest Data through its full lifecycle across eight stages — from the moment an arrest occurs through officer data collection, internal processing, standardization, public release, and finally public analysis and interpretation. Each stage carries its own potential issues that shape how the data should be understood.</p>
+
+    <div id="lifecycle-img-wrapper" style="max-width:100%; margin: 2rem 0;">
+      <div id="lifecycle-drop"
+           style="border: 2px solid var(--rule); border-radius: 4px; padding: 0.5rem; text-align:center; background: white;">        <img
+                src="Images/Diagram 1.png"
+                style="max-width:100%; height:auto; border-radius:4px;"
+                alt="SPD Arrest Data Lifecycle Diagram">
+      </div>
+    </div>
+
+    <p>Problems in this dataset do not arise from a single stage — they appear throughout the entire process. At the point of officer data collection (Stage 2), there are no clear public guidelines for how fields like subject race, age, and gender should be completed, meaning inconsistency can start right away. During data entry (Stage 3), placeholder values like "−," "Unknown," and "−1" are introduced and carry through to the internal database (Stage 4) and the cleaning stage (Stage 5). There is no clear documentation explaining what happens during cleaning. By the time the dataset reaches the public portal (Stage 6) and is used (Stages 7–8), these issues have accumulated. Notably, there is no feedback loop — no documented way for the public to influence how the data is collected or structured going forward, making the process mostly one-directional.</p>
+    <div class="section-footer">Step 2 — Lifecycle Diagram</div>
+  </section>
+
+  <!-- VISUALIZATIONS (Step 3) -->
+  <section class="section is-step" id="visualizations">
+    <div class="section-label"><span class="step-badge">Step 3</span>Data Visualizations</div>
+    <h2>Visualizations</h2>
+    <p>The following visualizations were created to reveal patterns, distributions, and structural issues within the dataset. Each chart is accompanied by an interpretation of key findings drawn from the data audit.</p>
+
+    <h3>Figure 1 — Data Quality Issues Across Variables</h3>
+    <div style="margin: 1.5rem 0; text-align:center;">
+      <img src="Images/Figure 1.png" style="max-width:100%; height:auto; border-radius:4px; border: 1px solid var(--rule);" alt="Figure 1">
+    </div>
+    <p>This chart shows the percentage of records containing placeholder or inconsistent values across key variables. Subject Race has the highest rate of problematic values at 9.6%, followed by Officer Race at 4.4%, and Longitude/Latitude at 1.9%. These values include "−," "Unknown," "Non-Specified," and "−1," none of which are clearly defined in the dataset's documentation. This creates accuracy problems because it is unclear whether these values represent missing data, a subject's refusal to answer, a data entry error, or a system default. Different analysts may treat them differently, which leads to different conclusions from the same source data.</p>
+
+    <h3>Figure 2 — Subject Race Distribution and Classification Issues</h3>
+    <div style="margin: 1.5rem 0; text-align:center;">
+      <img src="Images/Figure 2.png" style="max-width:100%; height:auto; border-radius:4px; border: 1px solid var(--rule);" alt="Figure 2">
+    </div>
+    <p>This chart shows the distribution of Subject Race in the dataset, where White accounts for 48.8% and Black for 33.9% of arrests. A notable 9.6% of records fall into the Unknown/Missing category — the third-largest group in the dataset. This alone raises questions about representation, but the more significant issue becomes clear when comparing race categories across variables: Hispanic appears in Officer Race at 8.7% but does not exist as a category in Subject Race at all. This means an entire group is effectively excluded from subject-level analysis, even though the category exists elsewhere in the dataset, making direct comparisons between officer and subject demographics unreliable.</p>
+
+    <h3>Figure 3 — Inconsistent Race Categories Across Variables</h3>
+    <div style="margin: 1.5rem 0; text-align:center;">
+      <img src="Images/Figure 3.png" style="max-width:100%; height:auto; border-radius:4px; border: 1px solid var(--rule);" alt="Figure 3">
+    </div>
+    <p>This side-by-side comparison illustrates categories that appear in Officer Race but not Subject Race, including Hispanic (8.7% vs. 0%) and Two or More Races (8.2% vs. 0%). This is not just a formatting problem — it means the dataset structurally cannot support certain types of demographic analysis. Core categories like White, Black, Asian, and Native American do appear in both variables, which makes the gaps harder to justify and indicates that alignment would be feasible with proper standardization.</p>
+
+    <h3>Figure 4 — Variation in Category Complexity Across Dataset Variables</h3>
+    <div style="margin: 1.5rem 0; text-align:center;">
+      <img src="Images/Figure 4.png" style="max-width:100%; height:auto; border-radius:4px; border: 1px solid var(--rule);" alt="Figure 4">
+    </div>
+    <p>This chart shows the number of unique values across non-identifier variables in the dataset. Offense Type contains 714 unique values and Officer Squad contains 270 — far higher than any other field. This level of complexity makes these variables extremely difficult to analyze without additional grouping or preprocessing. Geographic variables like Neighborhood (62 unique values) and Precinct (7 unique values) are included as a strength, enabling spatial analysis. However, the sheer complexity of certain fields creates a significant usability barrier for anyone without the time or technical skills to work through those categories.</p>
+
+    <h3>Figure 5 — How Removing Missing Data Changes Interpretation of Race Distributions</h3>
+    <div style="margin: 1.5rem 0; text-align:center;">
+      <img src="Images/Figure 5.png" style="max-width:100%; height:auto; border-radius:4px; border: 1px solid var(--rule);" alt="Figure 5">
+    </div>
+    <p>This chart demonstrates directly how data processing decisions change the apparent meaning of the dataset. When Unknown/Missing values are included, White accounts for 48.8% of arrests and Black for 33.9%. When those values are removed, the proportions shift to 54% and 37.5%, respectively. The same dataset, handled two different ways, tells a different story about who is being arrested. For a journalist or policymaker examining racial disparities in Seattle policing, this kind of ambiguity is not just a technical issue — it directly affects whether conclusions reflect what is actually happening or how the data was cleaned. The dataset offers no guidance on this decision.</p>
+    <div class="section-footer">Step 3 — Visualizations</div>
+  </section>
+
+  <!-- EVALUATION (Step 4) -->
+  <section class="section is-step" id="evaluation">
+    <div class="section-label"><span class="step-badge">Step 4</span>Data Audit Report</div>
+    <h2>Evaluation</h2>
+
+    <h3>Overall Evaluation</h3>
+    <p>The SPD arrest dataset isn't very reliable for demographic analysis or for comparing variables without extensive preprocessing. Right now, inconsistent race categories, unclear placeholder values, and a lack of documentation on cleaning all make it possible for the same dataset to yield different conclusions depending on how it's handled. For a dataset on policing and race, that's a pretty big issue. At the same time, it still has value as a transparency tool and a starting point for analysis. But in its current form, it needs some improvements before it can really be considered reliable or equitable for public use.</p>
+
+    <h3>Overview</h3>
+    <p>This project evaluates the Seattle Police Department (SPD) arrest dataset by looking at its data quality, consistency, usability, and ethical implications. Instead of using the dataset to tell a story about arrests, this audit focuses on how the data is actually compiled and the structural limitations that come with it.</p>
+    <p>Looking across the five visualizations and the earlier review in Step 1, it becomes clear that, even though the dataset is large and publicly accessible, the issues are not limited to a single variable. They appear at multiple points in the process, from how data is collected to how it is published, and they build on one another, shaping how the data can be understood and used.</p>
+
+    <h3>Data Lifecycle Context</h3>
+    <p>As shown in the data lifecycle diagram (Diagram 1), problems in this dataset do not arise from a single stage. They appear throughout the entire process. At the point of officer data collection (Stage 2), information such as subject race, age, and gender is recorded, but there are no clear public guidelines for how these fields should be completed. This means inconsistency can start right away.</p>
+    <p>During data entry (Stage 3), placeholder values like "−," "Unknown," and "−1" are introduced. These values carry into the SPD internal database (Stage 4) and continue through the cleaning and standardization stage (Stage 5). There is no clear documentation explaining what actually happens during this cleaning process, so it is difficult to know how the data is being changed before publication.</p>
+    <p>By the time the dataset reaches the Seattle Open Data Portal (Stage 6) and is used by the public (Stage 7), these issues have accumulated and begin to affect how the data can be analyzed and interpreted (Stage 8). Another important point shown in the diagram is the absence of a clear feedback loop. There is no documented way for researchers, journalists, or the public to influence how the data is collected or structured moving forward. Because of this, the process is mostly one-directional, which limits how much the dataset can improve over time.</p>
+
+    <h3>Data Quality and Accuracy</h3>
+    <p>As shown in Figure 1, placeholders and inconsistent values appear across multiple variables in the dataset. Subject Race has the highest rate of problematic values at 9.6%, followed by Officer Race at 4.4%, and Longitude/Latitude at 1.9%. These values include "−," "Unknown," "Non-Specified," and "−1," none of which are clearly defined in the dataset's documentation.</p>
+    <p>This creates accuracy problems because it is unclear whether these values represent missing data, a subject's refusal to answer, a data entry error, or a system default. Because the dataset does not distinguish between these cases, different analysts may treat them differently, which leads to different results from the same source data. As shown later in Figure 5, this is not a hypothetical concern; it produces measurable differences in how racial distributions are perceived.</p>
+    <p>The dataset does have some strengths in this area. Many fields, such as arrest type and date, are consistently formatted, suggesting that a standardized input system is in use. The dataset is also regularly updated, which helps keep it current. However, these strengths do not fully offset the reliability issues caused by undefined placeholder values, especially in demographic fields important to analysis.</p>
+
+    <h3>Consistency and Classification</h3>
+    <p>Figure 2 shows the distribution of Subject Race in the dataset, where White accounts for 48.8% and Black for 33.9% of arrests. A notable 9.6% of records fall into the Unknown/Missing category, which is the third-largest group in the dataset. This alone raises questions about representation, but the more significant issue becomes clear when comparing across variables.</p>
+    <p>As shown in Figure 3, the race categories do not match between Officer Race and Subject Race. "Hispanic" appears in Officer Race at 8.7%, but it shows up as 0% in Subject Race, indicating Hispanic individuals are not recorded as their own category in the subject data. "Two or More Races" has the same issue and only appears in the Officer Race field. This is not just a small formatting problem. It means an entire group is essentially missing from subject-level analysis, even though the category exists elsewhere in the dataset.</p>
+    <p>This has a direct impact on analysis. It makes it difficult to compare how officers and subjects are distributed by race or to look at possible disparities in arrests. The dataset does not support that kind of comparison in its current form. At the same time, core categories like White, Black, Asian, and Native American do appear in both variables, indicating that consistent classification is possible and making the gaps harder to justify.</p>
+
+    <h3>Usability and Accessibility</h3>
+    <p>Figure 4 shows the number of unique values across non-identifier variables in the dataset. Offense Type contains 714 unique values and Officer Squad contains 270, which are far higher than any other field. This level of complexity makes these variables extremely difficult to analyze without additional grouping or preprocessing.</p>
+    <p>The dataset is publicly available and follows a clear tabular structure, which makes it accessible at a basic level. Geographic variables like Neighborhood (62 unique values) and Precinct (7 unique values) are included, which is a strength — they enable spatial analysis and allow the dataset to be connected to external sources such as census population data.</p>
+    <p>However, the dataset is not very user-friendly for a general audience. Variables with many categories require substantial preparation before they can be analyzed, and the inconsistent labels mentioned earlier add additional cleaning steps. Without the time or technical skills to work through those issues, someone from the public would likely struggle to get clear or accurate insights from the data.</p>
+
+    <h3>Ethical Implications and Interpretation</h3>
+    <p>Figure 5 demonstrates directly how data processing decisions change the apparent meaning of the dataset. When Unknown/Missing values are included in the Subject Race distribution, White accounts for 48.8% of arrests and Black for 33.9%. When those values are removed, the proportions shift to 54% and 37.5%, respectively. This is a meaningful difference — the same dataset, handled two different ways, tells a different story about who is being arrested.</p>
+    <p>For a journalist writing about racial disparities in Seattle policing, or a policymaker looking at arrest patterns, this kind of ambiguity is not just a technical issue. It directly affects whether their conclusions reflect what is actually happening or reflect how the data was cleaned. The dataset does not provide guidance on handling "Unknown/Missing" values, so every analyst ends up making that decision on their own, often without it being clearly explained.</p>
+    <p>The "Force Involved" variable raises another issue. It is a binary value — "Y" or "N" — but it does not specify what constitutes force. A verbal command and a physical takedown could both be recorded the same way. Without that distinction, the variable cannot really support meaningful accountability analysis, even though it appears to.</p>
+    <p>These issues are further compounded by what the dataset omits. It records arrests, but it does not show what happens afterward. There is no information on whether charges were filed, if a case went to trial, or if there was a conviction. As a result, the dataset reflects policing activity and officer decisions more than it reflects crime itself. That difference matters a lot, but it is not clearly explained in the dataset's documentation.</p>
+
+    <h3>Missing Data and Missing Perspectives</h3>
+    <p>Beyond the missing values shown in Figure 1, there are also significant gaps in what the dataset includes. Several things a researcher would reasonably expect to see are completely absent:</p>
+    <ul style="margin: 1rem 0 1rem 1.5rem; line-height: 2.2;">
+      <li><strong>Arrest outcomes:</strong> The dataset does not indicate whether an arrest led to charges, a citation, or a booking, so it is hard to distinguish between more serious and less serious incidents.</li>
+      <li><strong>Repeat arrests:</strong> There is no way to tell if the records represent unique individuals or repeat arrests of the same person, which affects how totals should be interpreted.</li>
+      <li><strong>Population context:</strong> Even though the dataset includes neighborhood and precinct, it does not include population data. This means arrest counts cannot be turned into rates, so higher numbers in one area may just reflect a larger population.</li>
+      <li><strong>Force definitions:</strong> The "Force Involved" variable is not defined, making it difficult to interpret meaningfully.</li>
+      <li><strong>Hispanic subject classification:</strong> The subject race variable does not include a Hispanic category, so this group is folded into other categories.</li>
+    </ul>
+
+    <h3>Standardization and Potential Improvements</h3>
+    <p><strong>Offense Type Standardization.</strong> The Offense Type variable includes 714 unique values, making it the most complex field in the dataset. One practical improvement would be to add a standardized severity or grouping column alongside it — for example, Level 1 (low-level offenses), Level 2 (moderate offenses), and Level 3 (high-severity offenses). This would make it much easier to compare cases, group the data in a meaningful way, and improve usability for users who do not have the time or experience to work through hundreds of categories on their own.</p>
+    <p><strong>Race and Gender Category Alignment.</strong> Race and gender categories should be consistent across all variables. At a minimum, Subject Race should include the same categories as Officer Race, including Hispanic and Two or More Races. This would make comparisons between variables more valid and prevent entire groups from being excluded from subject-level analysis.</p>
+    <p><strong>Population Context.</strong> The dataset could be significantly improved by pairing it with census or neighborhood population data. The existing geographic variables (Neighborhood, Precinct, Beat, and Sector) make this integration feasible. Adding population denominators would allow arrest rates to be calculated instead of relying on raw counts, which is essential for fair comparisons across areas. This could also be supported by adding a normalized column — such as arrests per capita — directly to the dataset.</p>
+    <p><strong>Documentation and Transparency.</strong> The dataset should include clearer documentation explaining how placeholder values are defined, when and why they are used, what qualifies as "force" in the Force Involved variable, and which cleaning or normalization steps are applied before publication. Providing this information would help users make informed decisions about how to work with the data, rather than relying on assumptions.</p>
+
+    <h3>Strengths and Limitations Summary</h3>
+    <div class="content-card" data-label="Strengths">
+      <ul style="margin: 0.5rem 0 0 1.25rem; line-height: 2.2;">
+        <li>Large dataset with frequent updates</li>
+        <li>Publicly accessible through the Seattle Open Data Portal</li>
+        <li>Geographic variables (Neighborhood, Precinct, Beat, Sector) that support spatial analysis and connection to other datasets</li>
+        <li>Consistent binary encoding in certain columns</li>
+      </ul>
+    </div>
+    <div class="content-card" data-label="Limitations">
+      <ul style="margin: 0.5rem 0 0 1.25rem; line-height: 2.2;">
+        <li>High levels of missing and undefined placeholder values in key demographic fields</li>
+        <li>Inconsistent race and gender categories across variables, which makes comparisons unreliable</li>
+        <li>No clear documentation of data collection standards or cleaning methods</li>
+        <li>Very high category complexity in variables like Offense Type and Officer Squad</li>
+        <li>No outcome data, such as charges, convictions, or case results</li>
+        <li>No population data to allow for normalized comparisons across areas</li>
+        <li>No clear feedback process to incorporate external findings into improving the dataset</li>
+      </ul>
+    </div>
+
+    <h3>Public Good and Impact</h3>
+    <p>The SPD arrest dataset has real potential to contribute to the public good. It makes policing data more visible and accessible, which is important for transparency and accountability. Researchers, students, journalists, and policymakers can use it to examine patterns across time, location, and demographics that would otherwise be difficult to access.</p>
+    <p>At the same time, that potential is limited by the issues identified in this audit. Someone using the dataset without understanding the inconsistent categories, unclear placeholder values, or missing outcome data could easily draw conclusions that are not fully supported. In some cases, those conclusions could misrepresent how policing actually works in Seattle. Because the dataset deals with race and use of force, the impact of misinterpretation is not neutral.</p>
+    <p>With better standardization, clearer definitions, population context, and more transparent documentation, this dataset could become a much more reliable and equitable resource. The foundation is already there — the changes needed are not especially technical. They come down to clearer design and documentation that make the dataset more honest about what it does and does not show.</p>
+
+    <div class="content-card" data-label="Key Finding">
+      <p>The same dataset, handled two different ways, tells a meaningfully different story about who is being arrested in Seattle. When Unknown/Missing values are included in the Subject Race field, White accounts for 48.8% of arrests; when removed, that figure rises to 54%. This is not a hypothetical concern — it is a measurable, documented effect of the dataset's undefined placeholder values. For any analysis involving race and policing, this ambiguity is not a minor technical detail. It is a core reliability problem.</p>
+    </div>
+    <div class="section-footer">Step 4 — Data Audit Report</div>
+  </section>
+
+  <!-- RECOMMENDATIONS -->
+  <section class="section" id="recommendations">
+    <div class="section-label">Section 06</div>
+    <h2>Recommendations</h2>
+    <p>Based on the critical review, lifecycle analysis, visualizations, and evaluation, the following recommendations are proposed for improving data quality and usability.</p>
+
+    <ul class="rec-list">
+      <li>
+        <span class="rec-num">R1</span>
+        <p class="rec-text"><strong>Align race and gender categories across all variables.</strong> At a minimum, Subject Race should include the same categories as Officer Race, including Hispanic and Two or More Races. This would make comparisons between variables valid and prevent entire groups from being excluded from subject-level analysis.</p>
+      </li>
+      <li>
+        <span class="rec-num">R2</span>
+        <p class="rec-text"><strong>Define and standardize placeholder values.</strong> The dataset should include clear documentation explaining what "Unknown," "−," and "−1" mean, when and why they are used, and which cleaning or normalization steps are applied before publication. Without this, users are forced to make assumptions that can lead to different results from the same data.</p>
+      </li>
+      <li>
+        <span class="rec-num">R3</span>
+        <p class="rec-text"><strong>Add population context for normalized comparisons.</strong> The existing geographic variables (Neighborhood, Precinct, Beat, and Sector) make it feasible to pair the dataset with census population data. Adding arrests-per-capita figures would allow fairer comparisons across areas and make the dataset significantly more useful for research and policy analysis.</p>
+      </li>
+      <li>
+        <span class="rec-num">R4</span>
+        <p class="rec-text"><strong>Standardize the Offense Type field and define "Force Involved."</strong> The Offense Type variable contains 714 unique values, making it extremely difficult to analyze without additional grouping. Adding a standardized severity or grouping column would improve usability. Similarly, defining what constitutes "force" in the Force Involved variable would make that field meaningfully interpretable for accountability analysis.</p>
+      </li>
+    </ul>
+    <div class="section-footer">Recommendations</div>
+  </section>
+
+  <!-- CONCLUSION -->
+  <section class="section" id="conclusion">
+    <div class="section-label">Section 07</div>
+    <h2>Conclusion</h2>
+    <p>This audit set out to evaluate the SPD Arrest Data not as a story about arrests, but as a data artifact — examining how it is built, where it fails, and what those failures mean. Across five visualizations and the earlier critical review, a consistent pattern emerged: the issues are not isolated to one variable or one stage. They appear throughout the collection, entry, cleaning, and publication process, and they compound one another.</p>
+    <p>The dataset's most consequential problem is that the same data, handled in slightly different ways, produces meaningfully different conclusions about who is being arrested. That is not a minor inconsistency. For a public dataset focused on policing and race, it undermines the dataset's core function as a transparency tool. At the same time, the foundation is already there — the dataset is large, frequently updated, publicly accessible, and geographically detailed. The changes needed are not especially technical. They come down to clearer documentation, consistent categories, and a willingness to define what the data does and does not capture.</p>
+    <div class="content-card" data-label="Closing Statement">
+      <p>A dataset about policing has an obligation to be as clear about its own limitations as it is about the arrests it records. The SPD Arrest Data has real potential to support accountability, research, and informed policymaking — but only if the people maintaining it treat transparency as a design requirement, not an afterthought. The most important improvement is not adding more data; it is being more honest about the data that is already there.</p>
+    </div>
+    <div class="section-footer">Conclusion</div>
+  </section>
+
+  <!-- REFERENCES -->
+  <section class="section" id="references">
+    <div class="section-label">Section 08</div>
+    <h2>References</h2>
+    <p>All sources cited in this assignment are listed below in APA format.</p>
+    <ul class="ref-list">
+      <li>City of Seattle. (n.d.). <em>SPD Arrest Data.</em> Seattle Open Data Portal. https://data.seattle.gov/Public-Safety/SPD-Arrest-Data/9bjs-7a7w</li>
+      <li>U.S. Department of Justice. (2011). <em>Investigation of the Seattle Police Department.</em> Civil Rights Division.</li>
+    </ul>
+    <div class="section-footer">References</div>
+  </section>
+
+</main>
+
+  <span id="edit-label">Click to Edit Text</span>
+</div>
+
+<script>
+  // Active nav highlighting
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

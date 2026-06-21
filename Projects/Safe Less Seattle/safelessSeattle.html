@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Safe-less in Seattle: A Crime Mapping Field Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ===================== TOKENS ===================== */
+    :root {
+      --paper: #EDE6D4;
+      --paper-deep: #E2D9C2;
+      --paper-card: #F5F0E4;
+      --ink: #201D1A;
+      --ink-soft: #5A534A;
+      --rule: #C7BB9E;
+      --crimson: #9E2B1F;
+      --crimson-deep: #7A1F16;
+      --amber: #C97A1F;
+      --blue-tag: #2C4A6E;
+      --shadow: 0 10px 30px rgba(32, 29, 26, 0.18);
+      --font-display: 'Big Shoulders', sans-serif;
+      --font-body: 'IBM Plex Sans', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-body);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: var(--crimson-deep);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      * {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+
+    /* paper grain */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.05;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+
+    /* topo contour texture, used as a faint repeating bg on certain sections */
+    .topo {
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><g fill='none' stroke='%23201D1A' stroke-opacity='0.06' stroke-width='1.4'><path d='M-20,40 C60,10 120,70 200,40 S340,10 440,50'/><path d='M-20,90 C60,60 120,120 200,95 S340,55 440,100'/><path d='M-20,150 C70,115 130,180 210,150 S350,110 440,160'/><path d='M-20,220 C60,260 140,190 220,225 S340,270 440,225'/><path d='M-20,280 C70,250 150,310 230,280 S350,245 440,290'/><path d='M-20,340 C60,375 140,310 220,345 S340,385 440,340'/></g></svg>");
+      background-repeat: repeat;
+    }
+
+    /* ===================== LAYOUT SHELL ===================== */
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    section {
+      position: relative;
+    }
+
+    /* ===================== FOLDER TAB NAV ===================== */
+    .folder-nav {
+      position: fixed;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .folder-nav button {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--paper-card);
+      background: var(--ink-soft);
+      border: none;
+      cursor: pointer;
+      padding: 9px 16px 9px 20px;
+      clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 50%);
+      transform: translateX(34px);
+      transition: transform .25s ease, background .25s ease;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .folder-nav button:hover {
+      transform: translateX(0px);
+    }
+
+    .folder-nav button.active {
+      background: var(--crimson);
+      color: #fff;
+      transform: translateX(0px);
+      font-weight: 600;
+    }
+
+    @media (max-width: 880px) {
+      .folder-nav {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        transform: none;
+        flex-direction: row;
+        overflow-x: auto;
+        background: var(--ink);
+        padding: 8px 10px;
+        gap: 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .folder-nav button {
+        transform: none;
+        clip-path: none;
+        border-radius: 3px;
+        flex: 0 0 auto;
+        padding: 8px 12px;
+        background: transparent;
+        color: var(--paper-card);
+      }
+
+      .folder-nav button.active {
+        background: var(--crimson);
+      }
+    }
+
+    /* ===================== HERO ===================== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 0 80px;
+      background: var(--ink);
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      opacity: 0.34;
+      filter: saturate(0.7) contrast(1.05);
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(32, 29, 26, 0.55) 0%, rgba(32, 29, 26, 0.86) 62%, var(--ink) 100%);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      color: var(--paper-card);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 12px;
+      opacity: 0.85;
+      margin: 0 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      width: 26px;
+      height: 1px;
+      background: var(--amber);
+      display: inline-block;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-weight: 900;
+      color: var(--paper-card);
+      font-size: clamp(54px, 11vw, 132px);
+      line-height: 0.94;
+      margin: 0;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--crimson);
+      display: block;
+    }
+
+    .hero .sub {
+      font-family: var(--font-body);
+      color: var(--paper-card);
+      font-size: clamp(16px, 2.4vw, 22px);
+      max-width: 640px;
+      margin: 22px 0 0;
+      font-weight: 400;
+      opacity: 0.92;
+    }
+
+    .byline {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--paper-card);
+      opacity: 0.7;
+      margin-top: 28px;
+      letter-spacing: 0.02em;
+    }
+
+    .stamp {
+      position: absolute;
+      top: 64px;
+      right: 6%;
+      z-index: 2;
+      border: 3px double var(--crimson);
+      color: var(--crimson);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      transform: rotate(-7deg);
+      opacity: 0.9;
+      text-align: center;
+      line-height: 1.6;
+      background: rgba(237, 230, 212, 0.04);
+    }
+
+    .scroll-cue {
+      position: relative;
+      z-index: 1;
+      margin-top: 64px;
+      font-family: var(--font-mono);
+      color: var(--paper-card);
+      opacity: 0.6;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width:620px) {
+      .stamp {
+        display: none;
+      }
+    }
+
+    /* ===================== INTRO / CASE SUMMARY ===================== */
+    .intro {
+      padding: 90px 0 70px;
+      background: var(--paper);
+    }
+
+    .intro .wrap {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .case-label {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      color: var(--crimson);
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--crimson);
+      display: inline-block;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+    }
+
+    .intro h2 {
+      font-family: var(--font-display);
+      font-size: clamp(30px, 4vw, 44px);
+      font-weight: 800;
+      margin: 0 0 4px;
+      text-transform: uppercase;
+      line-height: 1.05;
+    }
+
+    .intro p {
+      font-size: 16.5px;
+      color: var(--ink);
+      margin: 0 0 16px;
+      max-width: 60ch;
+    }
+
+    .intro p.lede {
+      font-size: 19px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      margin-top: 26px;
+    }
+
+    .stat-chip {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      padding: 14px 18px;
+      min-width: 148px;
+      box-shadow: 2px 3px 0 var(--rule);
+    }
+
+    .stat-chip .num {
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--crimson-deep);
+      display: block;
+    }
+
+    .stat-chip .lab {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+    }
+
+    @media (max-width:860px) {
+      .intro .wrap {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+
+    /* ===================== EXHIBIT SECTIONS (shared) ===================== */
+    .exhibit {
+      padding: 80px 0;
+    }
+
+    .exhibit.shade {
+      background: var(--paper-deep);
+    }
+
+    .exhibit-head {
+      max-width: 760px;
+      margin-bottom: 46px;
+    }
+
+    .exhibit-tag {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-soft);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+    }
+
+    .exhibit-tag b {
+      color: var(--crimson);
+    }
+
+    .exhibit h2 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(32px, 4.6vw, 52px);
+      margin: 0 0 12px;
+      text-transform: uppercase;
+      line-height: 1.02;
+    }
+
+    .dek {
+      font-size: 18px;
+      color: var(--ink-soft);
+      margin: 0 0 18px;
+      max-width: 54ch;
+    }
+
+    .body-text {
+      font-size: 16px;
+      max-width: 68ch;
+      color: var(--ink);
+    }
+
+    .body-text p {
+      margin: 0 0 14px;
+    }
+
+    /* map card */
+    .map-card {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      padding: 14px 14px 16px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .map-card .pin {
+      position: absolute;
+      top: -7px;
+      left: 24px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--crimson);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .map-card img {
+      cursor: zoom-in;
+      border: 1px solid var(--rule);
+    }
+
+    .map-card figcaption {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-soft);
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .map-card figcaption .ttl {
+      display: block;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 3px;
+      font-family: var(--font-body);
+    }
+
+    .legend-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .legend-strip span {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      padding: 2px 7px;
+      border-radius: 2px;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    /* compare grid (two maps side by side) */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width:840px) {
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* tabs */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 0;
+    }
+
+    .tabs button {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      padding: 11px 18px;
+      border: 1px solid var(--rule);
+      background: var(--paper-deep);
+      color: var(--ink-soft);
+      cursor: pointer;
+      text-transform: uppercase;
+      clip-path: polygon(0 0, 100% 0, 92% 100%, 8% 100%);
+      border-bottom: none;
+      position: relative;
+      top: 1px;
+    }
+
+    .tabs button.active {
+      background: var(--paper-card);
+      color: var(--ink);
+      font-weight: 600;
+      top: 0;
+      border: 1px solid var(--rule);
+      border-bottom: 1px solid var(--paper-card);
+    }
+
+    .tab-panels {
+      border-top: 1px solid var(--rule);
+      padding-top: 28px;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 34px;
+      align-items: start;
+    }
+
+    @media (max-width:860px) {
+      .tab-panel.active {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tab-note {
+      font-size: 15.5px;
+      color: var(--ink);
+    }
+
+    .tab-note .ttl {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 24px;
+      text-transform: uppercase;
+      margin: 0 0 10px;
+      color: var(--crimson-deep);
+    }
+
+    /* clock toggle */
+    .clock-toggle {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 26px;
+      flex-wrap: wrap;
+    }
+
+    .clock-toggle button {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 10px 20px;
+      border: 2px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .clock-toggle button.active {
+      background: var(--ink);
+      color: var(--paper-card);
+    }
+
+    .clock-stage {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 34px;
+      align-items: start;
+    }
+
+    @media (max-width:860px) {
+      .clock-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .clock-panel {
+      display: none;
+    }
+
+    .clock-panel.active {
+      display: block;
+    }
+
+    /* footer */
+    footer {
+      background: var(--ink);
+      color: var(--paper-card);
+      padding: 70px 0 40px;
+    }
+
+    footer .wrap {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 50px;
+    }
+
+    footer h3 {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: 30px;
+      font-weight: 800;
+      margin: 0 0 16px;
+      color: var(--paper-card);
+    }
+
+    footer p {
+      color: #C9C2B2;
+      font-size: 15px;
+      max-width: 50ch;
+    }
+
+    footer a {
+      color: var(--amber);
+    }
+
+    .colophon {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: #A89F8C;
+      line-height: 2;
+    }
+
+    .colophon b {
+      color: var(--paper-card);
+      font-weight: 600;
+    }
+
+    .credit-line {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 50px;
+      padding-top: 22px;
+      border-top: 1px solid #3A352E;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #7E7666;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width:860px) {
+      footer .wrap {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 13, 11, 0.92);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      flex-direction: column;
+    }
+
+    .lightbox.open {
+      display: flex;
+    }
+
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 80vh;
+      object-fit: contain;
+      border: 2px solid var(--paper-card);
+    }
+
+    .lightbox .lb-cap {
+      font-family: var(--font-mono);
+      color: var(--paper-card);
+      font-size: 13px;
+      margin-top: 16px;
+      text-align: center;
+      max-width: 680px;
+    }
+
+    .lightbox .lb-close {
+      position: absolute;
+      top: 24px;
+      right: 32px;
+      background: none;
+      border: none;
+      color: var(--paper-card);
+      font-size: 30px;
+      cursor: pointer;
+      line-height: 1;
+      font-family: var(--font-body);
+    }
+
+    .section-divider {
+      height: 1px;
+      background: var(--rule);
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain"></div>
+
+  <nav class="folder-nav" id="folderNav">
+    <button data-target="#cover">Cover</button>
+    <button data-target="#exhibit-a">A &middot; Trend</button>
+    <button data-target="#exhibit-b">B &middot; Baseline</button>
+    <button data-target="#exhibit-c">C &middot; Offense</button>
+    <button data-target="#exhibit-d">D &middot; Clock</button>
+    <button data-target="#exhibit-e">E &middot; Transit</button>
+    <button data-target="#credits">Credits</button>
+  </nav>
+
+  <!-- ============ HERO / COVER ============ -->
+  <header class="hero" id="cover">
+  <div class="hero-bg"><img src="Maps/ArrestsPerTract.jpg" alt="Seattle arrest map background"></div>
+  <div class="stamp">CASE FILE<br>KC&middot;343<br>OPEN RECORD</div>
+  <div class="wrap hero-inner">
+    <p class="eyebrow">Field Report &middot; BIS 343 &middot; King County, WA</p>
+    <h1>Safe-less<br><em>in Seattle</em></h1>
+    <p class="sub">An eight-year map of who gets arrested, for what, when, and how close to a bus stop, built tract by tract from Seattle's own open data.</p>
+    <p class="byline">Reported &amp; mapped by Ebony Lopez &nbsp;·&nbsp; Transit-proximity exhibits mapped by Jackson Delles</p>
+    <p class="scroll-cue">↓ Open the file</p>
+  </div>
+</header>
+
+  <!-- ============ INTRO ============ -->
+  <section class="intro topo">
+    <div class="wrap">
+      <div>
+        <p class="case-label">Case Summary</p>
+        <h2>Six questions,<br>one dataset.</h2>
+      </div>
+      <div>
+        <p class="lede">Every arrest the Seattle Police Department logged from 2019 through 2025 has a place and a time
+          attached to it. This project lines those records up against census-tract population so raw counts become a
+          comparable rate, then asks the same data the same set of questions: where does it concentrate, what's it
+          usually for, what hour does it happen, and how close is it to transit.</p>
+        <p>Every map below was built in ArcGIS Pro from Seattle Open Data arrest records and U.S. Census population
+          estimates. A narrated, story-driven version of this same project, with more discussion of methodology, lives
+          in the companion StoryMap linked at the bottom of this page.</p>
+        <div class="stat-row">
+          <div class="stat-chip"><span class="num">5.14</span><span class="lab">Arrests / 1,000 · 2019</span></div>
+          <div class="stat-chip"><span class="num">4.24</span><span class="lab">Low point · 2021</span></div>
+          <div class="stat-chip"><span class="num">5.56</span><span class="lab">High point · 2025</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ============ EXHIBIT A: TREND ============ -->
+  <section class="exhibit" id="exhibit-a">
+    <div class="wrap">
+      <div class="exhibit-head">
+        <p class="exhibit-tag"><b>Exhibit A</b> &middot; The Trend Line</p>
+        <h2>Seven years,<br>one wobble.</h2>
+        <p class="dek">Citywide arrest rate, standardized per 1,000 residents, 2019–2025.</p>
+      </div>
+      <div class="body-text">
+        <p>Read on its own, the citywide number looks almost flat. Seattle opened the period at <strong>5.14</strong>
+          arrests per 1,000 residents, dropped to a seven-year low of <strong>4.24</strong> in 2021, and has climbed
+          every year since, closing 2025 at <strong>5.56</strong>, the highest mark in the window.</p>
+        <p>That single line is doing a lot of averaging. It's the citywide signal sitting on top of every map in this
+          report, where the same time span produces wildly different stories depending on which tract, which offense,
+          and which eight hours of the day you isolate.</p>
+      </div>
+      <figure class="map-card" style="max-width:760px; margin-top:30px;">
+        <div class="pin"></div>
+        <img src="Maps/Rplot05.png" alt="Seattle Arrest Rates by Year">
+        <figcaption><span class="ttl">Fig. A1 &middot; Seattle Arrest Rates by Year (2019-2025)</span>Total arrests
+          standardized by Seattle population &middot; Source: Seattle Open Data + Seattle population data</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ EXHIBIT B: BASELINE ============ -->
+  <section class="exhibit shade" id="exhibit-b">
+    <div class="wrap">
+      <div class="exhibit-head">
+        <p class="exhibit-tag"><b>Exhibit B</b> &middot; The Baseline</p>
+        <h2>Where it concentrates,<br>and what it usually is.</h2>
+        <p class="dek">Two views of the same census tracts: total arrest rate, and the single offense that drives it.
+        </p>
+      </div>
+      <div class="body-text" style="margin-bottom:34px;">
+        <p>Lay every offense type on top of each other and one corridor stands out immediately: a band running from
+          downtown through SoDo that lands in the deepest bracket on the map almost regardless of how you slice the
+          data. The second map asks what's actually driving that number tract by tract. Across most of the city's
+          residential tracts, the dominant offense is something ordinary, like simple assault, DUI, or shoplifting,
+          while the downtown/SoDo corridor is where drug and stolen-property offenses post rates many multiples higher
+          than anywhere else.</p>
+      </div>
+      <div class="compare-grid">
+        <figure class="map-card">
+          <div class="pin"></div>
+          <img src="Maps/ArrestsPerTract.jpg" alt="Arrest Rates per 1,000 Residents by Census Tract">
+          <figcaption><span class="ttl">Fig. B1 &middot; Arrest Rate by Census Tract</span>All offenses, per 1,000
+            residents
+            <div class="legend-strip">
+              <span style="background:#FFF6B0;color:#5a5320;">5.84–37.12</span>
+              <span style="background:#FED976;">37.12–63.90</span>
+              <span style="background:#FD9A44;">63.90–108.84</span>
+              <span style="background:#E5391E;">108.84–210.68</span>
+              <span style="background:#A60F0F;">210.68–9165.76</span>
+            </div>
+          </figcaption>
+        </figure>
+        <figure class="map-card">
+          <div class="pin"></div>
+          <img src="Maps/CommonOffenseType.jpg" alt="Common Offense Type by Census Tract">
+          <figcaption><span class="ttl">Fig. B2 &middot; Most Common Offense per Tract</span>Dominant offense type,
+            labeled with its rate per 1,000 residents
+            <div class="legend-strip">
+              <span style="background:#9AD8C8;color:#103a30;">Simple Assault</span>
+              <span style="background:#F4A6A1;color:#5a1410;">DUI</span>
+              <span style="background:#9FC1E8;color:#10243d;">Burglary/B&amp;E</span>
+              <span style="background:#B79BD6;color:#2a1a40;">Drug/Narcotic</span>
+              <span style="background:#F2C9E0;color:#4a1234;">Stolen Property</span>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXHIBIT C: BY OFFENSE ============ -->
+  <section class="exhibit" id="exhibit-c">
+    <div class="wrap">
+      <div class="exhibit-head">
+        <p class="exhibit-tag"><b>Exhibit C</b> &middot; By Offense</p>
+        <h2>Three categories,<br>three geographies.</h2>
+        <p class="dek">Same census tracts, same color scale, different offense each time. Open a tab to compare.</p>
+      </div>
+      <div class="body-text" style="margin-bottom:30px;">
+        <p>Aggravated assault and simple assault both echo the downtown and SoDo corridor seen in Exhibit B, though
+          simple assault spreads further into North Seattle than the more serious offense does. DUI breaks the pattern:
+          its highest-rate tracts show up just as often along the West Seattle peninsula and near the city's northern
+          edge as they do downtown, a footprint that tracks arterial roads more than it tracks the urban core.</p>
+      </div>
+
+      <div class="tabs" id="offenseTabs">
+        <button class="active" data-tab="aggravated">Aggravated Assault</button>
+        <button data-tab="simple">Simple Assault</button>
+        <button data-tab="dui">DUI</button>
+      </div>
+      <div class="tab-panels" id="offensePanels">
+
+        <div class="tab-panel active" data-panel="aggravated">
+          <figure class="map-card">
+            <div class="pin"></div>
+            <img src="Maps/AggravatedAssault.jpg" alt="Aggravated Assault Arrest Rates per 1,000 Residents">
+            <figcaption><span class="ttl">Fig. C1 &middot; Aggravated Assault</span>Arrests per 1,000 residents
+              <div class="legend-strip">
+                <span style="background:#FFF1F0;color:#7a2a20;">0–6</span><span
+                  style="background:#FBB4AE;color:#5a1410;">6–10</span><span
+                  style="background:#F4604B;">10–14</span><span style="background:#C5161B;">14–22</span><span
+                  style="background:#67000D;">22+</span>
+              </div>
+            </figcaption>
+          </figure>
+          <div class="tab-note">
+            <p class="ttl">Diffuse on its own</p>
+            <p>Aggravated assault is fairly spread out: several tracts at the city's northern edge and along the western
+              shoreline cross into the top 22+ bracket right alongside the downtown core.</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="simple">
+          <figure class="map-card">
+            <div class="pin"></div>
+            <img src="Maps/SimpleAssault.jpg" alt="Simple Assault Arrest Rates per 1,000 Residents">
+            <figcaption><span class="ttl">Fig. C2 &middot; Simple Assault</span>Arrests per 1,000 residents
+              <div class="legend-strip">
+                <span style="background:#FFF1F0;color:#7a2a20;">0–6</span><span
+                  style="background:#FBB4AE;color:#5a1410;">6–10</span><span
+                  style="background:#F4604B;">10–14</span><span style="background:#C5161B;">14–22</span><span
+                  style="background:#67000D;">22+</span>
+              </div>
+            </figcaption>
+          </figure>
+          <div class="tab-note">
+            <p class="ttl">The most evenly spread offense</p>
+            <p>Top-bracket tracts turn up scattered across North Seattle, the northeast shoreline, and the West Seattle
+              peninsula tip, not just downtown, making this the least downtown-centric map in the set.</p>
+          </div>
+        </div>
+
+        <div class="tab-panel" data-panel="dui">
+          <figure class="map-card">
+            <div class="pin"></div>
+            <img src="Maps/DUI.jpg" alt="DUI Arrest Rates per 1,000 Residents">
+            <figcaption><span class="ttl">Fig. C3 &middot; DUI</span>Arrests per 1,000 residents
+              <div class="legend-strip">
+                <span style="background:#FFF1F0;color:#7a2a20;">0–6</span><span
+                  style="background:#FBB4AE;color:#5a1410;">6–10</span><span
+                  style="background:#F4604B;">10–14</span><span style="background:#C5161B;">14–22</span><span
+                  style="background:#67000D;">22+</span>
+              </div>
+            </figcaption>
+          </figure>
+          <div class="tab-note">
+            <p class="ttl">Follows roads, not downtown</p>
+            <p>The 22+ bracket shows up repeatedly outside the urban core: along the West Seattle peninsula, near the
+              northern city line, and down through the southern county tracts. It's a footprint that tracks arterials
+              more than it tracks downtown.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXHIBIT D: CLOCK ============ -->
+  <section class="exhibit shade" id="exhibit-d">
+    <div class="wrap">
+      <div class="exhibit-head">
+        <p class="exhibit-tag"><b>Exhibit D</b> &middot; By the Clock</p>
+        <h2>Same legend,<br>three shifts.</h2>
+        <p class="dek">Day (6 AM-2 PM), Mid (2 PM-10 PM), and Night (10 PM-6 AM): identical scale, identical tracts.</p>
+      </div>
+      <div class="body-text" style="margin-bottom:30px;">
+        <p>Split the day into three eight-hour windows and one thing never changes: the downtown/SoDo corridor sits in
+          the top 55+ bracket whether it's 9 a.m., 9 p.m., or 3 a.m. What does move is the rest of the map. Different
+          pockets of North Seattle and the West Seattle peninsula cross into the 26-55 tier depending on the window,
+          with no single shift clearly outpacing the other two citywide.</p>
+      </div>
+      <div class="clock-toggle" id="clockToggle">
+        <button class="active" data-clock="day">Day · 6 AM–2 PM</button>
+        <button data-clock="mid">Mid · 2 PM–10 PM</button>
+        <button data-clock="night">Night · 10 PM–6 AM</button>
+      </div>
+      <div class="clock-stage">
+        <div>
+          <div class="clock-panel active" data-clockpanel="day">
+            <figure class="map-card">
+              <div class="pin"></div>
+              <img src="Maps/Dayshift.jpg" alt="Daytime Arrest Rates per 1,000 Residents">
+              <figcaption><span class="ttl">Fig. D1 &middot; Daytime (6 AM-2 PM)</span>Arrests per 1,000 residents
+              </figcaption>
+            </figure>
+          </div>
+          <div class="clock-panel" data-clockpanel="mid">
+            <figure class="map-card">
+              <div class="pin"></div>
+              <img src="Maps/MidShift.jpg" alt="Mid-Day Arrest Rates per 1,000 Residents">
+              <figcaption><span class="ttl">Fig. D2 &middot; Mid-Day (2 PM-10 PM)</span>Arrests per 1,000 residents
+              </figcaption>
+            </figure>
+          </div>
+          <div class="clock-panel" data-clockpanel="night">
+            <figure class="map-card">
+              <div class="pin"></div>
+              <img src="Maps/NightShift.jpg" alt="Night Arrest Rates per 1,000 Residents">
+              <figcaption><span class="ttl">Fig. D3 &middot; Night (10 PM-6 AM)</span>Arrests per 1,000 residents
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="tab-note">
+          <p class="ttl">Shared scale</p>
+          <p>All three maps use the same five-band legend, so color is directly comparable across shifts:</p>
+          <div class="legend-strip">
+            <span style="background:#FFEDA0;color:#5a4f10;">1–8</span><span style="background:#FED976;">8–16</span><span
+              style="background:#FD8D3C;">16–26</span><span style="background:#E31A1C;">26–55</span><span
+              style="background:#B10026;">55+</span>
+          </div>
+          <p style="margin-top:14px;">Toggle between shifts to watch which tracts gain or lose color while downtown
+            stays fixed at the top.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EXHIBIT E: TRANSIT ============ -->
+  <section class="exhibit" id="exhibit-e">
+    <div class="wrap">
+      <div class="exhibit-head">
+        <p class="exhibit-tag"><b>Exhibit E</b> &middot; Within Reach of Transit</p>
+        <h2>How close is<br>close enough?</h2>
+        <p class="dek">Every arrest since 2019, scored against its distance to the nearest transit stop. Mapped by
+          Jackson Delles.</p>
+      </div>
+      <div class="body-text" style="margin-bottom:30px;">
+        <p>Widen the buffer to 500 feet and the map turns almost entirely blue: the large majority of arrests citywide
+          land within that distance of a transit stop, a reflection of how dense Seattle's transit network already is as
+          much as anything else. Tighten it to 100 feet and the picture flips, with most points falling outside that
+          narrower ring and only a scattered minority landing directly on top of a stop. Together, the two maps suggest
+          arrests cluster <em>near</em> transit infrastructure, but rarely directly on it.</p>
+      </div>
+      <div class="compare-grid">
+        <figure class="map-card">
+          <div class="pin"></div>
+          <img src="Maps/100_Feet_Map.webp" alt="Arrests Within 100 Feet of a Transit Stop">
+          <figcaption><span class="ttl">Fig. E1 &middot; Within 100 Feet of a Transit Stop</span>Arrests since 2019
+            &middot; mapped by Jackson Delles
+            <div class="legend-strip">
+              <span style="background:#7A1F16;">● Outside range</span><span style="background:#2C4A6E;">● Within
+                range</span>
+            </div>
+          </figcaption>
+        </figure>
+        <figure class="map-card">
+          <div class="pin"></div>
+          <img src="Maps/500_Feet_Map.webp" alt="Arrests Within 500 Feet of a Transit Stop">
+          <figcaption><span class="ttl">Fig. E2 &middot; Within 500 Feet of a Transit Stop</span>Arrests since 2019
+            &middot; mapped by Jackson Delles
+            <div class="legend-strip">
+              <span style="background:#7A1F16;">● Outside range</span><span style="background:#2C4A6E;">● Within
+                range</span>
+            </div>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER / CREDITS ============ -->
+  <footer id="credits" class="topo">
+    <div class="wrap">
+      <div>
+        <h3>Read the full file.</h3>
+        <p>This page is the field-notes version. The complete StoryMap walks through methodology, sourcing, and the
+          narrative behind every exhibit above.</p>
+        <p style="margin-top:18px;"><a href="https://storymaps.arcgis.com/stories/4626abd5a5624d99bb0814eeb101e794"
+            target="_blank" rel="noopener">Open the StoryMap: "Safe-less in Seattle: An Analysis of Crime in King
+            County" →</a></p>
+      </div>
+      <div class="colophon">
+        <p><b>Case notes</b></p>
+        <p>Mapping &amp; analysis &middot; <b>Ebony Lopez</b><br>
+          Transit-proximity maps (100 ft / 500 ft) &middot; <b>Jackson Delles</b><br>
+          Course &middot; BIS 343<br>
+          Data &middot; Seattle Open Data, U.S. Census population estimates<br>
+          Basemap credits &middot; Esri, NASA, NGA, USGS, FEMA, TomTom, Garmin, FAO, NOAA, OpenStreetMap contributors,
+          and the GIS User Community</p>
+      </div>
+    </div>
+    <div class="wrap credit-line">
+      <span>SAFE-LESS IN SEATTLE &middot; FIELD REPORT</span>
+      <span>BIS 343 · 2019–2025 DATA WINDOW</span>
+    </div>
+  </footer>
+
+  <!-- ============ LIGHTBOX ============ -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+    <img id="lbImg" src="" alt="">
+    <p class="lb-cap" id="lbCap"></p>
+  </div>
+
+  <script>
+    // ---- folder nav active state + smooth scroll ----
+    const navButtons = document.querySelectorAll('.folder-nav button');
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.querySelector(btn.dataset.target);
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+    const sections = Array.from(navButtons).map(b => document.querySelector(b.dataset.target)).filter(Boolean);
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = sections.indexOf(entry.target);
+          navButtons.forEach(b => b.classList.remove('active'));
+          if (idx > -1) navButtons[idx].classList.add('active');
+        }
+      });
+    }, { rootMargin: '-45% 0px -45% 0px' });
+    sections.forEach(s => io.observe(s));
+
+    // ---- offense tabs ----
+    const offenseTabs = document.querySelectorAll('#offenseTabs button');
+    offenseTabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        offenseTabs.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('#offensePanels .tab-panel').forEach(p => {
+          p.classList.toggle('active', p.dataset.panel === btn.dataset.tab);
+        });
+      });
+    });
+
+    // ---- clock toggle ----
+    const clockBtns = document.querySelectorAll('#clockToggle button');
+    clockBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        clockBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('.clock-panel').forEach(p => {
+          p.classList.toggle('active', p.dataset.clockpanel === btn.dataset.clock);
+        });
+      });
+    });
+
+    // ---- lightbox ----
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbCap = document.getElementById('lbCap');
+    document.querySelectorAll('.map-card img').forEach(img => {
+      img.addEventListener('click', () => {
+        lbImg.src = img.src;
+        lbCap.textContent = img.dataset.cap || img.alt || '';
+        lightbox.classList.add('open');
+      });
+    });
+    document.getElementById('lbClose').addEventListener('click', () => lightbox.classList.remove('open'));
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('open'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') lightbox.classList.remove('open'); });
+  </script>
+</body>
+
+</html>
