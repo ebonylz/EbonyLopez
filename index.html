@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ebony Lopez | Portfolio</title>
+
+    <style>
+        :root {
+            --pink: #f8dff4;
+            --light-pink: #fff4fb;
+            --purple: #8c6ccf;
+            --dark-purple: #5e469c;
+            --text: #3d3552;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(180deg, var(--light-pink), var(--pink));
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        header {
+            padding: 80px 10%;
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .profile-img {
+            width: 350px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            color: var(--dark-purple);
+            margin-bottom: 10px;
+        }
+
+        .hero-text h2 {
+            color: var(--purple);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .hero-text p {
+            max-width: 700px;
+            font-size: 1.1rem;
+        }
+
+        .section {
+            padding: 80px 10%;
+        }
+
+        .section h2 {
+            color: var(--dark-purple);
+            margin-bottom: 25px;
+            font-size: 2.2rem;
+            text-align: center;
+        }
+
+        .about-card {
+            background: rgba(255, 255, 255, .85);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        }
+
+        .highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .highlight-card {
+            background: rgba(255, 255, 255, .85);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+            transition: .3s;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .highlight-card h3 {
+            color: var(--dark-purple);
+            margin-bottom: 12px;
+        }
+
+        .highlight-card p {
+            margin: 4px 0;
+        }
+
+        .portfolio-intro {
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+            transition: .3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .project-card h3 {
+            color: var(--dark-purple);
+            margin-bottom: 10px;
+        }
+
+        .project-card p {
+            margin-bottom: 20px;
+        }
+
+        .project-card a {
+            display: inline-block;
+            text-decoration: none;
+            background: var(--purple);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        .project-card a:hover {
+            background: var(--dark-purple);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--dark-purple);
+        }
+
+        @media(max-width:900px) {
+
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .profile-img {
+                width: 280px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+
+        <img src="me.jpg" alt="Ebony Lopez" class="profile-img">
+
+        <div class="hero-text">
+            <h1>Ebony Lopez</h1>
+
+            <h2>Data Visualization Graduate & Operations Leader</h2>
+
+            <p>
+                Passionate about transforming data into meaningful stories,
+                creating engaging experiences, and applying analytics to solve
+                real-world business challenges.
+            </p>
+        </div>
+
+    </header>
+
+
+    <!-- EXPERIENCE HIGHLIGHTS -->
+
+    <section class="section">
+
+        <h2>Experience Highlights</h2>
+
+        <div class="highlights-grid">
+
+            <div class="highlight-card">
+                <h3>🎓 Education</h3>
+                <p>B.S. in Data Visualization</p>
+                <p>University of Washington Bothell</p>
+            </div>
+
+            <div class="highlight-card">
+                <h3>🎬 AMC Theatres</h3>
+                <p>Started as Crew Member in 2022</p>
+                <p>Promoted Every Year</p>
+            </div>
+
+            <div class="highlight-card">
+                <h3>👥 Leadership</h3>
+                <p>2 Years of Management Experience</p>
+                <p>HR, F&B, Booth & Operations</p>
+            </div>
+
+            <div class="highlight-card">
+                <h3>📊 Technical Skills</h3>
+                <p>R, GIS, D3.js</p>
+                <p>HTML, CSS, JavaScript, Excel</p>
+            </div>
+
+            <div class="highlight-card">
+                <h3>📈 Analytics</h3>
+                <p>Data Storytelling</p>
+                <p>Performance Tracking Systems</p>
+            </div>
+
+            <div class="highlight-card">
+                <h3>🏆 Business Impact</h3>
+                <p>Employee Engagement Initiatives</p>
+                <p>Contest & Dashboard Design</p>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT ME -->
+
+    <section class="section">
+
+        <h2>About Me</h2>
+
+        <div class="about-card">
+
+            <p>
+                Hi, I'm Ebony Lopez, a recent graduate from the University of Washington
+                Bothell with a Bachelor of Science in Data Visualization. I am passionate about using data to tell stories, solve
+                problems, and create engaging experiences that help people understand
+                information in meaningful ways.
+            </p>
+
+            <br>
+
+            <p>
+                Throughout my degree, I developed experience in data visualization,
+                analytics, GIS, R, D3.js, HTML, CSS, JavaScript, and Excel. My work
+                focuses on transforming complex datasets into accessible visual stories
+                that help audiences explore trends, identify patterns, and make informed
+                decisions.
+            </p>
+
+            <br>
+
+            <p>
+                In addition to my technical background, I have built extensive leadership
+                and operational experience through AMC Theatres. I joined AMC in 2022 as
+                a Crew Member and have progressed through multiple leadership roles,
+                earning promotions each year. For the past two years, I have served as a
+                manager supporting Human Resources, Food & Beverage operations, inventory
+                management and ordering, booth operations, performance scheduling, hiring,
+                onboarding, training, and employee development.
+            </p>
+
+            <br>
+
+            <p>
+                My operational experience spans every area of theatre operations,
+                including concessions, ushering, box office, projection, food and
+                beverage inventory management, ordering, and performance scheduling.
+                I have assisted with projector troubleshooting, movie scheduling to help
+                drive attendance and revenue, and theatre-wide initiatives focused on
+                improving operational performance.
+            </p>
+
+            <br>
+
+            <p>
+                One of my favorite aspects of my work has been finding ways to apply data
+                visualization principles outside of traditional analytics environments.
+                I have built Excel-based tracking systems, performance dashboards, and
+                employee engagement contests that transform operational data into
+                interactive experiences. These projects have helped increase employee
+                participation, improve performance metrics, and create stronger engagement
+                with theatre goals.
+            </p>
+
+            <br>
+
+            <p>
+                My portfolio showcases both technical and operational projects, ranging
+                from public data storytelling and interactive visualizations to workplace
+                engagement systems designed to drive measurable business outcomes. I enjoy
+                combining analytical thinking, visual design, and leadership to create
+                solutions that are both effective and engaging.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- PORTFOLIO PROJECTS -->
+
+    <section class="section">
+
+        <h2>Portfolio Projects</h2>
+
+        <p class="portfolio-intro">
+            These projects showcase a combination of data visualization,
+            analytics, web development, and operational leadership. They
+            range from public data storytelling and interactive dashboards
+            to workplace engagement initiatives designed to drive measurable
+            business outcomes.
+        </p>
+
+        <div class="projects-grid">
+
+            <div class="project-card">
+
+                <h3>Seattle Police Arrest Data Analysis</h3>
+
+                <p>
+                    Data journalism project exploring arrest trends,
+                    demographics, spatial patterns, and data quality
+                    issues within Seattle.
+                </p>
+
+                <a href="Projects/Project1/Project1.html" target="_blank">
+                    View Project
+                </a>
+
+            </div>
+
+            <div class="project-card">
+
+                <h3>Seattle 911 Call Analysis</h3>
+
+                <p>
+                    Interactive data story analyzing changes in
+                    emergency calls between 2020 and 2025 using
+                    D3.js visualizations and population-adjusted metrics.
+                </p>
+
+                <a href="Projects/Project2/index.html" target="_blank">
+                    View Project
+                </a>
+
+            </div>
+
+            <div class="project-card">
+
+                <h3>Safe-less in Seattle</h3>
+
+                <p>
+                    An interactive data journalism project examining arrest
+                    patterns across Seattle from 2019–2025. Using census tract
+                    analysis, GIS mapping, and transit accessibility data, the
+                    project explores where arrests occur, how they change over
+                    time, and how location influences public safety trends.
+                </p>
+
+                <a href="Projects/Safe Less Seattle/safelessSeattle.html" target="_blank">
+                    View Project
+                </a>
+
+            </div>
+
+
+            <div class="project-card">
+
+                <h3>Six Weeks at Freddy's</h3>
+
+                <p>
+                    A workplace engagement and performance analytics
+                    project that used gamification and visualization
+                    principles to improve crew engagement and support
+                    UPT goals at AMC Theatres.
+                </p>
+
+                <a href="Projects/fnaf-contest.html" target="_blank">
+                    View Case Study
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer>
+        © 2026 Ebony Lopez
+    </footer>
+
+</body>
+
+</html>
