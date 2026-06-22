@@ -1,337 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Six Weeks at Freddy's | Ebony Lopez</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six Weeks at Freddy's | Ebony Lopez</title>
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-:root{
-    --bg:#0d0d0d;
-    --card:#1a1a1a;
-    --gold:#d89a3d;
-    --orange:#b8571b;
-    --red:#8d2a2a;
-    --text:#e9e9e9;
-}
+        :root {
+            --bg: #0d0d0d;
+            --card: #1a1a1a;
+            --gold: #d89a3d;
+            --orange: #b8571b;
+            --red: #8d2a2a;
+            --text: #e9e9e9;
+        }
 
-body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:"Segoe UI",sans-serif;
-    line-height:1.8;
-}
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", sans-serif;
+            line-height: 1.8;
+        }
 
-header{
-    padding:120px 10%;
-    text-align:center;
-    background:
-        linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.85)),
-        url("Five Nights at Freddys Contest.png");
-    background-size:cover;
-    background-position:center;
-}
+        header {
+            padding: 120px 10%;
+            text-align: center;
+            background:
+                linear-gradient(rgba(0, 0, 0, .75), rgba(0, 0, 0, .85)),
+                url("Five Nights at Freddys Contest.png");
+            background-size: cover;
+            background-position: center;
+        }
 
-header h1{
-    font-size:4rem;
-    color:var(--gold);
-    margin-bottom:20px;
-    text-shadow:0 0 15px rgba(216,154,61,.4);
-}
+        header h1 {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(216, 154, 61, .4);
+        }
 
-header p{
-    max-width:900px;
-    margin:auto;
-    font-size:1.2rem;
-}
+        header p {
+            max-width: 900px;
+            margin: auto;
+            font-size: 1.2rem;
+        }
 
-section{
-    padding:80px 10%;
-}
+        section {
+            padding: 80px 10%;
+        }
 
-.card{
-    background:var(--card);
-    border:2px solid #3a2a18;
-    border-radius:20px;
-    padding:40px;
-    margin-bottom:40px;
-    box-shadow:0 0 20px rgba(216,154,61,.08);
-}
+        .card {
+            background: var(--card);
+            border: 2px solid #3a2a18;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 0 20px rgba(216, 154, 61, .08);
+        }
 
-h2{
-    color:var(--gold);
-    margin-bottom:20px;
-    font-size:2rem;
-}
+        h2 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
 
-.visual-section{
-    margin:100px 0;
-}
+        .visual-section {
+            margin: 100px 0;
+        }
 
-.visual-section img{
-    width:100%;
-    max-width:1200px;
-    display:block;
-    margin:30px auto;
-    border-radius:18px;
-    border:3px solid #4a341e;
-    box-shadow:0 0 25px rgba(216,154,61,.15);
-}
+        .visual-section img {
+            width: 100%;
+            max-width: 1200px;
+            display: block;
+            margin: 30px auto;
+            border-radius: 18px;
+            border: 3px solid #4a341e;
+            box-shadow: 0 0 25px rgba(216, 154, 61, .15);
+        }
 
-.visual-section p{
-    max-width:950px;
-    margin:auto;
-}
+        .visual-section p {
+            max-width: 950px;
+            margin: auto;
+        }
 
-.skills{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:15px;
-    margin-top:20px;
-}
+        .skills {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
 
-.skill{
-    background:#242424;
-    padding:15px;
-    border-radius:12px;
-    text-align:center;
-}
+        .skill {
+            background: #242424;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
 
-.back{
-    display:inline-block;
-    margin-top:25px;
-    padding:12px 24px;
-    background:var(--orange);
-    color:white;
-    text-decoration:none;
-    border-radius:999px;
-    font-weight:600;
-}
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 24px;
+            background: var(--orange);
+            color: white;
+            text-decoration: none;
+            border-radius: 999px;
+            font-weight: 600;
+        }
 
-.back:hover{
-    background:var(--red);
-}
+        .back:hover {
+            background: var(--red);
+        }
 
-footer{
-    text-align:center;
-    padding:40px;
-    color:#999;
-}
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
 
-@media(max-width:700px){
-    header h1{
-        font-size:2.6rem;
-    }
+        @media(max-width:700px) {
+            header h1 {
+                font-size: 2.6rem;
+            }
 
-    section{
-        padding:50px 6%;
-    }
+            section {
+                padding: 50px 6%;
+            }
 
-    .card{
-        padding:28px;
-    }
-}
-</style>
+            .card {
+                padding: 28px;
+            }
+
+            .download-btn {
+                display: inline-block;
+                margin: 25px auto 0;
+                padding: 14px 28px;
+                background: var(--gold);
+                color: #111;
+                text-decoration: none;
+                font-weight: 700;
+                border-radius: 999px;
+                transition: .3s;
+            }
+
+            .download-btn:hover {
+                background: #f0b454;
+                transform: translateY(-2px);
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<header>
-    <h1>Six Weeks at Freddy's</h1>
-
-    <p>
-        Using data visualization, gamification, and performance analytics to increase
-        employee engagement and improve Unit Per Transaction (UPT) performance at AMC Theatres.
-    </p>
-</header>
-
-<section>
-
-    <div class="card">
-        <h2>Project Overview</h2>
+    <header>
+        <h1>Six Weeks at Freddy's</h1>
 
         <p>
-            Six Weeks at Freddy's was an employee engagement initiative that I designed
-            while working as a manager at AMC Theatres. The objective was to improve
-            Unit Per Transaction (UPT) performance by encouraging suggestive selling
-            behaviors through a team-based competition.
+            Using data visualization, gamification, and performance analytics to increase
+            employee engagement and improve Unit Per Transaction (UPT) performance at AMC Theatres.
         </p>
+    </header>
 
-        <br>
+    <section>
 
-        <p>
-            Rather than presenting employees with weekly reports or basic spreadsheets,
-            I transformed performance metrics into an interactive experience inspired
-            by Five Nights at Freddy's. Employees were drafted into teams represented
-            by different characters, earned points based on weekly UPT performance,
-            and competed to advance through a themed progression system.
-        </p>
-    </div>
+        <div class="card">
+            <h2>Project Overview</h2>
 
-    <div class="card">
-        <h2>Design Process</h2>
+            <p>
+                Six Weeks at Freddy's was an employee engagement initiative that I designed
+                while working as a manager at AMC Theatres. The objective was to improve
+                Unit Per Transaction (UPT) performance by encouraging suggestive selling
+                behaviors through a team-based competition.
+            </p>
 
-        <p>
-            This project allowed me to combine my Data Visualization education with
-            my management experience. I developed the contest structure, designed
-            the visual assets, created the scoring system, tracked weekly results,
-            and maintained team standings throughout the competition.
-        </p>
+            <br>
 
-        <br>
-
-        <p>
-            One of my main goals was to design a system that would be easy to update
-            every week. I created an Excel workbook that organized each week of the
-            contest into separate tabs, making it simple to enter new UPT reports,
-            calculate team performance, and keep track of progress over time.
-        </p>
-
-        <br>
-
-        <p>
-            The spreadsheet was built to help reduce manual work. It tracked employee
-            transactions, units sold, total sales, average transaction, individual UPT,
-            team UPT, weekly rankings, bonus points, previous week scores, and team
-            improvement points. This made it easier to see which teams were leading,
-            who earned bonus points, and how the leaderboard changed each week.
-        </p>
-
-        <br>
-
-        <p>
-            I also designed the tracker so the results could be quickly translated
-            into the physical contest board. Instead of only looking at raw numbers,
-            managers could use the spreadsheet to update team standings, move teams
-            forward on the board, and explain results clearly to employees.
-        </p>
-
-        <br>
-
-        <p>
-            Instead of presenting employees with raw performance data, I transformed
-            the numbers into a visual story where teams moved through security camera
-            locations inspired by Five Nights at Freddy's. This made performance
-            metrics easier to understand while creating excitement around theatre goals.
-        </p>
-    </div>
-
-    <div class="card">
-        <h2>Results & Impact</h2>
-
-        <p>
-            One of the biggest successes of the contest was employee engagement.
-            Crew members regularly checked the board, discussed standings with their
-            teammates, and tracked how their individual performance affected their
-            team's position.
-        </p>
-
-        <br>
-
-        <p>
-            By turning performance metrics into a game, employees became more invested
-            in theatre goals and more conscious of their suggestive selling behaviors.
-            The contest encouraged healthy competition while reinforcing the business
-            objectives that directly influence UPT performance.
-        </p>
-
-        <br>
-
-        <p>
-            This project demonstrates how data visualization principles can be used
-            outside of traditional dashboards and reports. By combining visual design,
-            storytelling, Excel tracking, and performance analytics, I created a system
-            that encouraged participation, improved engagement, and supported
-            operational goals.
-        </p>
-    </div>
-
-    <div class="visual-section">
-        <h2>Contest Rules & Structure</h2>
-
-        <img src="Five Nights at Freddys Contest.png"
-             alt="Contest Overview">
-
-        <p>
-            This graphic introduced the competition structure, scoring system,
-            bonus point opportunities, contest timeline, and prizes. The goal
-            was to make the rules easy to understand while establishing a strong
-            visual identity for the contest.
-        </p>
-    </div>
-
-    <div class="visual-section">
-        <h2>Physical Progress Board</h2>
-
-        <img src="FiveWeeksContest.jpg"
-             alt="Progress Board">
-
-        <p>
-            Weekly standings were displayed on a large tracking board inspired
-            by the security camera system from Five Nights at Freddy's. Teams
-            advanced through camera locations as they earned points, creating
-            a visual representation of progress throughout the competition.
-        </p>
-    </div>
-
-    <div class="visual-section">
-        <h2>Team Draft & Organization</h2>
-
-        <img src="FNAF Contest Teams.png"
-             alt="Contest Teams">
-
-        <p>
-            Employees were drafted onto teams represented by different
-            Five Nights at Freddy's characters. Team-based competition
-            encouraged collaboration and created additional motivation for
-            employees to contribute to their group's success.
-        </p>
-    </div>
-
-    <div class="visual-section">
-        <h2>Excel Tracking System</h2>
-
-        <img src="FnafExcel.png"
-             alt="Excel tracking system for Six Weeks at Freddy's">
-
-        <p>
-            Behind the contest was a custom Excel tracking system that I designed
-            to make the competition easier to manage. The workbook tracked weekly
-            employee performance, team UPT, bonus points, previous week results,
-            improvement points, weekly winners, and cumulative leaderboard standings.
-            This made the contest easier to update, reduced manual calculations,
-            and helped keep scoring consistent across all six weeks.
-        </p>
-    </div>
-
-    <div class="card">
-        <h2>Skills Demonstrated</h2>
-
-        <div class="skills">
-            <div class="skill">Data Visualization</div>
-            <div class="skill">Excel Tracking Systems</div>
-            <div class="skill">Performance Analytics</div>
-            <div class="skill">Employee Engagement</div>
-            <div class="skill">Leadership</div>
-            <div class="skill">Gamification Design</div>
-            <div class="skill">Project Management</div>
-            <div class="skill">Visual Communication</div>
+            <p>
+                Rather than presenting employees with weekly reports or basic spreadsheets,
+                I transformed performance metrics into an interactive experience inspired
+                by Five Nights at Freddy's. Employees were drafted into teams represented
+                by different characters, earned points based on weekly UPT performance,
+                and competed to advance through a themed progression system.
+            </p>
         </div>
-    </div>
 
-    <a href="../../index.html" class="back">← Back to Portfolio</a>
+        <div class="card">
+            <h2>Design Process</h2>
 
-</section>
+            <p>
+                This project allowed me to combine my Data Visualization education with
+                my management experience. I developed the contest structure, designed
+                the visual assets, created the scoring system, tracked weekly results,
+                and maintained team standings throughout the competition.
+            </p>
 
-<footer>
-    Created by Ebony Lopez
-</footer>
+            <br>
+
+            <p>
+                One of my main goals was to design a system that would be easy to update
+                every week. I created an Excel workbook that organized each week of the
+                contest into separate tabs, making it simple to enter new UPT reports,
+                calculate team performance, and keep track of progress over time.
+            </p>
+
+            <br>
+
+            <p>
+                The spreadsheet was built to help reduce manual work. It tracked employee
+                transactions, units sold, total sales, average transaction, individual UPT,
+                team UPT, weekly rankings, bonus points, previous week scores, and team
+                improvement points. This made it easier to see which teams were leading,
+                who earned bonus points, and how the leaderboard changed each week.
+            </p>
+
+            <br>
+
+            <p>
+                I also designed the tracker so the results could be quickly translated
+                into the physical contest board. Instead of only looking at raw numbers,
+                managers could use the spreadsheet to update team standings, move teams
+                forward on the board, and explain results clearly to employees.
+            </p>
+
+            <br>
+
+            <p>
+                Instead of presenting employees with raw performance data, I transformed
+                the numbers into a visual story where teams moved through security camera
+                locations inspired by Five Nights at Freddy's. This made performance
+                metrics easier to understand while creating excitement around theatre goals.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>Results & Impact</h2>
+
+            <p>
+                One of the biggest successes of the contest was employee engagement.
+                Crew members regularly checked the board, discussed standings with their
+                teammates, and tracked how their individual performance affected their
+                team's position.
+            </p>
+
+            <br>
+
+            <p>
+                By turning performance metrics into a game, employees became more invested
+                in theatre goals and more conscious of their suggestive selling behaviors.
+                The contest encouraged healthy competition while reinforcing the business
+                objectives that directly influence UPT performance.
+            </p>
+
+            <br>
+
+            <p>
+                This project demonstrates how data visualization principles can be used
+                outside of traditional dashboards and reports. By combining visual design,
+                storytelling, Excel tracking, and performance analytics, I created a system
+                that encouraged participation, improved engagement, and supported
+                operational goals.
+            </p>
+        </div>
+
+        <div class="visual-section">
+            <h2>Contest Rules & Structure</h2>
+
+            <img src="Five Nights at Freddys Contest.png" alt="Contest Overview">
+
+            <p>
+                This graphic introduced the competition structure, scoring system,
+                bonus point opportunities, contest timeline, and prizes. The goal
+                was to make the rules easy to understand while establishing a strong
+                visual identity for the contest.
+            </p>
+        </div>
+
+        <div class="visual-section">
+            <h2>Physical Progress Board</h2>
+
+            <img src="FiveWeeksContest.jpg" alt="Progress Board">
+
+            <p>
+                Weekly standings were displayed on a large tracking board inspired
+                by the security camera system from Five Nights at Freddy's. Teams
+                advanced through camera locations as they earned points, creating
+                a visual representation of progress throughout the competition.
+            </p>
+        </div>
+
+        <div class="visual-section">
+            <h2>Team Draft & Organization</h2>
+
+            <img src="FNAF Contest Teams.png" alt="Contest Teams">
+
+            <p>
+                Employees were drafted onto teams represented by different
+                Five Nights at Freddy's characters. Team-based competition
+                encouraged collaboration and created additional motivation for
+                employees to contribute to their group's success.
+            </p>
+        </div>
+
+        <div class="visual-section">
+            <h2>Excel Tracking System</h2>
+
+            <img src="FnafExcel.png" alt="Excel tracking system for Six Weeks at Freddy's">
+
+            <p>
+                Behind the contest was a custom Excel tracking system that I designed
+                to make the competition easier to manage. The workbook tracked weekly
+                employee performance, team UPT, bonus points, previous week results,
+                improvement points, weekly winners, and cumulative leaderboard standings.
+                This made the contest easier to update, reduced manual calculations,
+                and helped keep scoring consistent across all six weeks.
+            </p>
+
+            <div style="text-align:center;">
+                <a href="Six Weeks at Freddys.xlsx" download class="download-btn">
+                    📊 Download Excel Tracker
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Skills Demonstrated</h2>
+
+            <div class="skills">
+                <div class="skill">Data Visualization</div>
+                <div class="skill">Excel Tracking Systems</div>
+                <div class="skill">Performance Analytics</div>
+                <div class="skill">Employee Engagement</div>
+                <div class="skill">Leadership</div>
+                <div class="skill">Gamification Design</div>
+                <div class="skill">Project Management</div>
+                <div class="skill">Visual Communication</div>
+            </div>
+        </div>
+
+        <a href="../../index.html" class="back">← Back to Portfolio</a>
+
+    </section>
+
+    <footer>
+        Created by Ebony Lopez
+    </footer>
 
 </body>
+
 </html>
