@@ -6,172 +6,596 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ebony Lopez | Portfolio</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
-            --pink: #f8dff4;
-            --light-pink: #fff4fb;
-            --purple: #8c6ccf;
-            --dark-purple: #5e469c;
-            --text: #3d3552;
+            --ink: #1c1726;
+            --velvet: #4a1942;
+            --gold: #d6a541;
+            --gold-light: #f1cf85;
+            --paper: #f6f1e7;
+            --chalk: #f3ecdf;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: "Segoe UI", sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            background: linear-gradient(180deg, var(--light-pink), var(--pink));
-            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--ink);
+            background: var(--paper);
             line-height: 1.7;
         }
 
-        header {
-            padding: 80px 10%;
-            min-height: 85vh;
+        h1,
+        h2,
+        h3 {
+            font-family: 'Fraunces', Georgia, serif;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--gold);
+            outline-offset: 3px;
+        }
+
+        .mono {
+            font-family: 'Space Mono', 'Courier New', monospace;
+        }
+
+        .eyebrow {
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: .18em;
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--gold);
             display: flex;
             align-items: center;
-            gap: 60px;
+            gap: 10px;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--gold);
+            display: inline-block;
+        }
+
+        section[id] {
+            scroll-margin-top: 84px;
+        }
+
+        /* ---------- reveal-on-scroll ---------- */
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
+            }
+        }
+
+        /* ---------- nav ---------- */
+
+        .site-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 7%;
+            background: transparent;
+            transition: background .35s ease, box-shadow .35s ease, padding .35s ease;
+        }
+
+        .site-nav.scrolled {
+            background: rgba(28, 23, 38, .92);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+            padding: 12px 7%;
+        }
+
+        .nav-mark {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--gold-light);
+            border: 1.5px solid var(--gold);
+            border-radius: 5px;
+            padding: 4px 9px;
+            letter-spacing: .05em;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: clamp(14px, 3vw, 32px);
+        }
+
+        .nav-links a {
+            font-family: 'Space Mono', monospace;
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--chalk);
+            text-decoration: none;
+            opacity: .85;
+            transition: color .25s, opacity .25s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-light);
+            opacity: 1;
+        }
+
+        /* ---------- hero ---------- */
+
+        .hero {
+            position: relative;
+            background: radial-gradient(ellipse 80% 60% at 30% 0%, var(--velvet), var(--ink) 70%);
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            gap: 70px;
+            padding: 130px 9% 90px;
+            color: var(--chalk);
+            overflow: hidden;
+        }
+
+        .poster-frame {
+            position: relative;
+            flex-shrink: 0;
+            padding: 14px;
+            background: var(--chalk);
+            border-radius: 4px;
+            transform: rotate(-2deg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, .45);
+        }
+
+        .poster-frame::after {
+            content: "";
+            position: absolute;
+            top: -8px;
+            right: 22px;
+            width: 16px;
+            height: 16px;
+            background: var(--ink);
+            border-radius: 50%;
+            box-shadow: 0 0 0 2px var(--chalk);
         }
 
         .profile-img {
-            width: 350px;
-            border-radius: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, .15);
+            width: 320px;
+            display: block;
+            border-radius: 2px;
         }
 
         .hero-text h1 {
-            font-size: 3.5rem;
-            color: var(--dark-purple);
-            margin-bottom: 10px;
+            font-size: clamp(2.6rem, 6vw, 4.2rem);
+            font-weight: 900;
+            line-height: 1.05;
+            color: var(--chalk);
+            margin: 10px 0 6px;
         }
 
         .hero-text h2 {
-            color: var(--purple);
-            margin-bottom: 20px;
-            font-weight: 500;
+            font-family: 'Space Mono', monospace;
+            font-size: clamp(.85rem, 1.6vw, 1.05rem);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--gold-light);
+            margin-bottom: 22px;
         }
 
         .hero-text p {
-            max-width: 700px;
-            font-size: 1.1rem;
+            max-width: 540px;
+            font-size: 1.08rem;
+            color: rgba(243, 236, 224, .8);
         }
 
-        .section {
-            padding: 80px 10%;
+        /* ---------- ticker (signature element) ---------- */
+
+        .ticker {
+            background: var(--gold);
+            color: var(--ink);
+            overflow: hidden;
+            white-space: nowrap;
+            border-top: 2px solid var(--ink);
+            border-bottom: 2px solid var(--ink);
         }
 
-        .section h2 {
-            color: var(--dark-purple);
-            margin-bottom: 25px;
-            font-size: 2.2rem;
+        .ticker-track {
+            display: inline-flex;
+            width: max-content;
+            animation: scroll-ticker 32s linear infinite;
+            padding: 13px 0;
+        }
+
+        .ticker-track span {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: .82rem;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+            padding-right: 28px;
+        }
+
+        @keyframes scroll-ticker {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ticker-track {
+                animation: none;
+            }
+        }
+
+        /* ---------- highlights ---------- */
+
+        .highlights-section {
+            padding: 100px 9% 90px;
+            background: var(--paper);
+        }
+
+        .highlights-section h2 {
+            font-size: clamp(1.9rem, 3vw, 2.4rem);
+            color: var(--ink);
+            margin: 8px 0 50px;
+        }
+
+        .section-head {
             text-align: center;
+            margin-bottom: 50px;
         }
 
-        .about-card {
-            background: rgba(255, 255, 255, .85);
-            border-radius: 24px;
-            padding: 35px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
+        .section-head .eyebrow {
+            justify-content: center;
+            margin-bottom: 8px;
         }
 
         .highlights-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 26px;
         }
 
-        .highlight-card {
-            background: rgba(255, 255, 255, .85);
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
-            transition: .3s;
+        .ticket-card {
+            display: flex;
+            background: #fffaf2;
+            border-radius: 12px;
+            box-shadow: 0 12px 28px rgba(28, 23, 38, .08);
+            overflow: hidden;
+            transition: transform .3s ease, box-shadow .3s ease;
         }
 
-        .highlight-card:hover {
+        .ticket-card:hover {
             transform: translateY(-6px);
+            box-shadow: 0 18px 34px rgba(28, 23, 38, .14);
         }
 
-        .highlight-card h3 {
-            color: var(--dark-purple);
-            margin-bottom: 12px;
+        @media (prefers-reduced-motion: reduce) {
+            .ticket-card:hover {
+                transform: none;
+            }
         }
 
-        .highlight-card p {
-            margin: 4px 0;
+        .ticket-stub {
+            position: relative;
+            flex-shrink: 0;
+            width: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--velvet);
+            border-right: 2px dashed rgba(243, 236, 224, .35);
+        }
+
+        .ticket-stub::before,
+        .ticket-stub::after {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: var(--paper);
+            border-radius: 50%;
+            right: -9px;
+        }
+
+        .ticket-stub::before {
+            top: -9px;
+        }
+
+        .ticket-stub::after {
+            bottom: -9px;
+        }
+
+        .stub-label {
+            font-family: 'Space Mono', monospace;
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            color: var(--gold-light);
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+        }
+
+        .ticket-body {
+            padding: 24px 22px;
+        }
+
+        .ticket-body h3 {
+            font-size: 1.15rem;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .ticket-body p {
+            font-size: .92rem;
+            color: #564c6e;
+            margin: 2px 0;
+        }
+
+        /* ---------- about ---------- */
+
+        .about-section {
+            background: var(--chalk);
+            padding: 100px 9%;
+        }
+
+        .about-wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: .85fr 1.15fr;
+            gap: 60px;
+        }
+
+        .about-pull {
+            position: sticky;
+            top: 110px;
+            align-self: start;
+        }
+
+        .about-pull .eyebrow {
+            margin-bottom: 18px;
+        }
+
+        .about-pull p {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: clamp(1.5rem, 2.6vw, 2rem);
+            line-height: 1.35;
+            color: var(--velvet);
+        }
+
+        .about-body p {
+            margin-bottom: 22px;
+            color: #3d3552;
+            font-size: 1.02rem;
+        }
+
+        .about-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 900px) {
+            .about-wrap {
+                grid-template-columns: 1fr;
+            }
+
+            .about-pull {
+                position: static;
+            }
+        }
+
+        /* ---------- work / now showing ---------- */
+
+        .work-section {
+            background: linear-gradient(165deg, var(--ink) 0%, var(--velvet) 100%);
+            padding: 100px 9% 110px;
+            color: var(--chalk);
+        }
+
+        .work-section .section-head h2 {
+            color: var(--chalk);
+            margin: 8px 0 16px;
         }
 
         .portfolio-intro {
-            max-width: 800px;
-            margin: 0 auto 40px auto;
+            max-width: 700px;
+            margin: 0 auto 50px auto;
             text-align: center;
-            font-size: 1.05rem;
+            font-size: 1.02rem;
+            color: rgba(243, 236, 224, .78);
         }
 
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            gap: 28px;
         }
 
-        .project-card {
-            background: white;
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, .08);
-            transition: .3s;
+        .poster-card {
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(214, 165, 65, .25);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform .3s ease, border-color .3s ease;
         }
 
-        .project-card:hover {
+        .poster-card:hover {
             transform: translateY(-8px);
+            border-color: var(--gold);
         }
 
-        .project-card h3 {
-            color: var(--dark-purple);
+        @media (prefers-reduced-motion: reduce) {
+            .poster-card:hover {
+                transform: none;
+            }
+        }
+
+        .poster-sprockets {
+            height: 12px;
+            background: var(--gold);
+            background-image: radial-gradient(circle, var(--ink) 2.6px, transparent 3px);
+            background-size: 24px 12px;
+            background-position: 12px center;
+        }
+
+        .poster-card-inner {
+            padding: 28px 26px;
+        }
+
+        .poster-meta {
+            font-family: 'Space Mono', monospace;
+            font-size: .68rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--gold-light);
             margin-bottom: 10px;
         }
 
-        .project-card p {
-            margin-bottom: 20px;
+        .poster-card h3 {
+            font-size: 1.3rem;
+            color: var(--chalk);
+            margin-bottom: 12px;
         }
 
-        .project-card a {
-            display: inline-block;
+        .poster-card p {
+            font-size: .96rem;
+            color: rgba(243, 236, 224, .72);
+            margin-bottom: 24px;
+        }
+
+        .ticket-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             text-decoration: none;
-            background: var(--purple);
-            color: white;
+            background: var(--gold);
+            color: var(--ink);
+            font-family: 'Space Mono', monospace;
+            font-size: .8rem;
+            font-weight: 700;
+            letter-spacing: .04em;
             padding: 10px 18px;
             border-radius: 999px;
-            font-weight: 600;
+            transition: background .25s, gap .25s;
         }
 
-        .project-card a:hover {
-            background: var(--dark-purple);
+        .ticket-btn:hover {
+            background: var(--gold-light);
+            gap: 12px;
         }
+
+        /* ---------- footer ---------- */
 
         footer {
+            background: var(--ink);
             text-align: center;
-            padding: 40px;
-            color: var(--dark-purple);
+            padding: 54px 20px 46px;
+            color: var(--chalk);
         }
 
-        @media(max-width:900px) {
+        .bulb-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
 
-            header {
+        .bulb-row span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--gold);
+            opacity: .8;
+        }
+
+        footer .copyright {
+            font-family: 'Space Mono', monospace;
+            font-size: .85rem;
+            letter-spacing: .04em;
+        }
+
+        footer .tagline {
+            font-family: 'Space Mono', monospace;
+            font-size: .68rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: var(--gold-light);
+            margin-top: 10px;
+        }
+
+        /* ---------- responsive ---------- */
+
+        @media (max-width: 900px) {
+            .hero {
                 flex-direction: column;
                 text-align: center;
+                padding-top: 150px;
             }
 
-            .hero-text h1 {
-                font-size: 2.5rem;
+            .poster-frame {
+                transform: rotate(0deg);
+            }
+
+            .hero-text p {
+                max-width: 100%;
             }
 
             .profile-img {
-                width: 280px;
+                width: 240px;
+            }
+
+            .nav-links {
+                gap: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links a:nth-child(1) {
+                display: none;
             }
         }
     </style>
@@ -179,15 +603,25 @@
 
 <body>
 
-    <header>
+    <nav class="site-nav" id="siteNav">
+        <a href="#top" class="nav-mark">EL</a>
+        <div class="nav-links">
+            <a href="#highlights">Highlights</a>
+            <a href="#about">About</a>
+            <a href="#work">Now Showing</a>
+        </div>
+    </nav>
 
-        <img src="me.jpg" alt="Ebony Lopez" class="profile-img">
+    <header id="top" class="hero">
+
+        <div class="poster-frame">
+            <img src="me.jpg" alt="Ebony Lopez" class="profile-img">
+        </div>
 
         <div class="hero-text">
+            <p class="eyebrow">Now Showing</p>
             <h1>Ebony Lopez</h1>
-
-            <h2>Data Visualization Graduate & Operations Leader</h2>
-
+            <h2>Data Visualization Graduate &amp; Operations Leader</h2>
             <p>
                 Passionate about transforming data into meaningful stories,
                 creating engaging experiences, and applying analytics to solve
@@ -197,49 +631,78 @@
 
     </header>
 
+    <div class="ticker" aria-hidden="true">
+        <div class="ticker-track">
+            <span>DATA STORYTELLING • R • D3.JS • GIS • OPERATIONS LEADERSHIP • EXCEL DASHBOARDS • SEATTLE DATA
+                JOURNALISM • EMPLOYEE ENGAGEMENT • PERFORMANCE ANALYTICS • </span>
+            <span>DATA STORYTELLING • R • D3.JS • GIS • OPERATIONS LEADERSHIP • EXCEL DASHBOARDS • SEATTLE DATA
+                JOURNALISM • EMPLOYEE ENGAGEMENT • PERFORMANCE ANALYTICS • </span>
+        </div>
+    </div>
 
     <!-- EXPERIENCE HIGHLIGHTS -->
 
-    <section class="section">
+    <section class="highlights-section" id="highlights">
 
-        <h2>Experience Highlights</h2>
+        <div class="section-head reveal">
+            <p class="eyebrow">Highlight Reel</p>
+            <h2>Experience Highlights</h2>
+        </div>
 
         <div class="highlights-grid">
 
-            <div class="highlight-card">
-                <h3>🎓 Education</h3>
-                <p>B.S. in Data Visualization</p>
-                <p>University of Washington Bothell</p>
+            <div class="ticket-card reveal">
+                <div class="ticket-stub"><span class="stub-label">EDU</span></div>
+                <div class="ticket-body">
+                    <h3>Education</h3>
+                    <p>B.S. in Data Visualization</p>
+                    <p>University of Washington Bothell</p>
+                </div>
             </div>
 
-            <div class="highlight-card">
-                <h3>🎬 AMC Theatres</h3>
-                <p>Started as Crew Member in 2022</p>
-                <p>Promoted Every Year</p>
+            <div class="ticket-card reveal">
+                <div class="ticket-stub"><span class="stub-label">AMC</span></div>
+                <div class="ticket-body">
+                    <h3>AMC Theatres</h3>
+                    <p>Started as Crew Member in 2021</p>
+                    <p>Progressed to Manager through leadership and operational excellence</p>
+                </div>
             </div>
 
-            <div class="highlight-card">
-                <h3>👥 Leadership</h3>
-                <p>2 Years of Management Experience</p>
-                <p>HR, F&B, Booth & Operations</p>
+            <div class="ticket-card reveal">
+                <div class="ticket-stub"><span class="stub-label">LEAD</span></div>
+                <div class="ticket-body">
+                    <h3>Leadership</h3>
+                    <p>2 Years of Management Experience</p>
+                    <p>HR, F&amp;B, Booth &amp; Operations</p>
+                </div>
             </div>
 
-            <div class="highlight-card">
-                <h3>📊 Technical Skills</h3>
-                <p>R, GIS, D3.js</p>
-                <p>HTML, CSS, JavaScript, Excel</p>
+            <div class="ticket-card reveal">
+                <div class="ticket-stub"><span class="stub-label">TECH</span></div>
+                <div class="ticket-body">
+                    <h3>Technical Skills</h3>
+                    <p>R, GIS, D3.js</p>
+                    <p>HTML, CSS, JavaScript, Excel</p>
+                </div>
             </div>
 
-            <div class="highlight-card">
-                <h3>📈 Analytics</h3>
-                <p>Data Storytelling</p>
-                <p>Performance Tracking Systems</p>
+            <div class="ticket-card reveal">
+                <div class="ticket-stub"><span class="stub-label">DATA</span></div>
+                <div class="ticket-body">
+                    <h3>Analytics</h3>
+                    <p>Data Storytelling</p>
+                    <p>Performance Tracking Systems</p>
+                </div>
             </div>
 
-            <div class="highlight-card">
-                <h3>🏆 Business Impact</h3>
-                <p>Employee Engagement Initiatives</p>
-                <p>Contest & Dashboard Design</p>
+            <div class="ticket-card reveal">
+                <div class="ticket-stub"><span class="stub-label">IMPACT</span></div>
+                <div class="ticket-body">
+                    <h3>Business Impact</h3>
+                    <p>Employee Engagement Initiatives</p>
+                    <p>Contest &amp; Dashboard Design</p>
+                </div>
             </div>
 
         </div>
@@ -249,74 +712,70 @@
 
     <!-- ABOUT ME -->
 
-    <section class="section">
+    <section class="about-section" id="about">
 
-        <h2>About Me</h2>
+        <div class="about-wrap">
 
-        <div class="about-card">
+            <div class="about-pull reveal">
+                <p class="eyebrow">About</p>
+                <p>From box office to dashboard&nbsp;— data is data.</p>
+            </div>
 
-            <p>
-                Hi, I'm Ebony Lopez, a recent graduate from the University of Washington
-                Bothell with a Bachelor of Science in Data Visualization. I am passionate about using data to tell
-                stories, solve
-                problems, and create engaging experiences that help people understand
-                information in meaningful ways.
-            </p>
+            <div class="about-body reveal">
 
-            <br>
+                <p>
+                    Hi, I'm Ebony Lopez, a recent graduate from the University of Washington
+                    Bothell with a Bachelor of Science in Data Visualization. I am passionate about using data to tell
+                    stories, solve problems, and create engaging experiences that help people understand
+                    information in meaningful ways.
+                </p>
 
-            <p>
-                Throughout my degree, I developed experience in data visualization,
-                analytics, GIS, R, D3.js, HTML, CSS, JavaScript, and Excel. My work
-                focuses on transforming complex datasets into accessible visual stories
-                that help audiences explore trends, identify patterns, and make informed
-                decisions.
-            </p>
+                <p>
+                    Throughout my degree, I developed experience in data visualization,
+                    analytics, GIS, R, D3.js, HTML, CSS, JavaScript, and Excel. My work
+                    focuses on transforming complex datasets into accessible visual stories
+                    that help audiences explore trends, identify patterns, and make informed
+                    decisions.
+                </p>
 
-            <br>
+                <p>
+                    In addition to my technical background, I have built extensive leadership
+                    and operational experience through AMC Theatres. I joined AMC in 2022 as
+                    a Crew Member and have progressed through multiple leadership roles,
+                    earning promotions each year. For the past two years, I have served as a
+                    manager supporting Human Resources, Food &amp; Beverage operations, inventory
+                    management and ordering, booth operations, performance scheduling, hiring,
+                    onboarding, training, and employee development.
+                </p>
 
-            <p>
-                In addition to my technical background, I have built extensive leadership
-                and operational experience through AMC Theatres. I joined AMC in 2022 as
-                a Crew Member and have progressed through multiple leadership roles,
-                earning promotions each year. For the past two years, I have served as a
-                manager supporting Human Resources, Food & Beverage operations, inventory
-                management and ordering, booth operations, performance scheduling, hiring,
-                onboarding, training, and employee development.
-            </p>
+                <p>
+                    My operational experience spans every area of theatre operations,
+                    including concessions, ushering, box office, projection, food and
+                    beverage inventory management, ordering, and performance scheduling.
+                    I have assisted with projector troubleshooting, movie scheduling to help
+                    drive attendance and revenue, and theatre-wide initiatives focused on
+                    improving operational performance.
+                </p>
 
-            <br>
+                <p>
+                    One of my favorite aspects of my work has been finding ways to apply data
+                    visualization principles outside of traditional analytics environments.
+                    I have built Excel-based tracking systems, performance dashboards, and
+                    employee engagement contests that transform operational data into
+                    interactive experiences. These projects have helped increase employee
+                    participation, improve performance metrics, and create stronger engagement
+                    with theatre goals.
+                </p>
 
-            <p>
-                My operational experience spans every area of theatre operations,
-                including concessions, ushering, box office, projection, food and
-                beverage inventory management, ordering, and performance scheduling.
-                I have assisted with projector troubleshooting, movie scheduling to help
-                drive attendance and revenue, and theatre-wide initiatives focused on
-                improving operational performance.
-            </p>
+                <p>
+                    My portfolio showcases both technical and operational projects, ranging
+                    from public data storytelling and interactive visualizations to workplace
+                    engagement systems designed to drive measurable business outcomes. I enjoy
+                    combining analytical thinking, visual design, and leadership to create
+                    solutions that are both effective and engaging.
+                </p>
 
-            <br>
-
-            <p>
-                One of my favorite aspects of my work has been finding ways to apply data
-                visualization principles outside of traditional analytics environments.
-                I have built Excel-based tracking systems, performance dashboards, and
-                employee engagement contests that transform operational data into
-                interactive experiences. These projects have helped increase employee
-                participation, improve performance metrics, and create stronger engagement
-                with theatre goals.
-            </p>
-
-            <br>
-
-            <p>
-                My portfolio showcases both technical and operational projects, ranging
-                from public data storytelling and interactive visualizations to workplace
-                engagement systems designed to drive measurable business outcomes. I enjoy
-                combining analytical thinking, visual design, and leadership to create
-                solutions that are both effective and engaging.
-            </p>
+            </div>
 
         </div>
 
@@ -325,86 +784,80 @@
 
     <!-- PORTFOLIO PROJECTS -->
 
-    <section class="section">
+    <section class="work-section" id="work">
 
-        <h2>Portfolio Projects</h2>
-
-        <p class="portfolio-intro">
-            These projects showcase a combination of data visualization,
-            analytics, web development, and operational leadership. They
-            range from public data storytelling and interactive dashboards
-            to workplace engagement initiatives designed to drive measurable
-            business outcomes.
-        </p>
+        <div class="section-head reveal">
+            <p class="eyebrow">Portfolio</p>
+            <h2>Now Showing</h2>
+            <p class="portfolio-intro">
+                These projects showcase a combination of data visualization,
+                analytics, web development, and operational leadership. They
+                range from public data storytelling and interactive dashboards
+                to workplace engagement initiatives designed to drive measurable
+                business outcomes.
+            </p>
+        </div>
 
         <div class="projects-grid">
 
-            <div class="project-card">
-
-                <h3>Seattle Police Arrest Data Analysis</h3>
-
-                <p>
-                    Data journalism project exploring arrest trends,
-                    demographics, spatial patterns, and data quality
-                    issues within Seattle.
-                </p>
-
-                <a href="Projects/Project1/Project1.html" target="_blank">
-                    View Project
-                </a>
-
+            <div class="poster-card reveal">
+                <div class="poster-sprockets"></div>
+                <div class="poster-card-inner">
+                    <p class="poster-meta">Feature · Data Journalism</p>
+                    <h3>Seattle Police Arrest Data Analysis</h3>
+                    <p>
+                        Data journalism project exploring arrest trends,
+                        demographics, spatial patterns, and data quality
+                        issues within Seattle.
+                    </p>
+                    <a href="Projects/Project1/Project1.html" target="_blank" class="ticket-btn">View Project →</a>
+                </div>
             </div>
 
-            <div class="project-card">
-
-                <h3>Seattle 911 Call Analysis</h3>
-
-                <p>
-                    Interactive data story analyzing changes in
-                    emergency calls between 2020 and 2025 using
-                    D3.js visualizations and population-adjusted metrics.
-                </p>
-
-                <a href="Projects/Project2/index.html" target="_blank">
-                    View Project
-                </a>
-
+            <div class="poster-card reveal">
+                <div class="poster-sprockets"></div>
+                <div class="poster-card-inner">
+                    <p class="poster-meta">Feature · Interactive D3.js</p>
+                    <h3>Seattle 911 Call Analysis</h3>
+                    <p>
+                        Interactive data story analyzing changes in
+                        emergency calls between 2020 and 2025 using
+                        D3.js visualizations and population-adjusted metrics.
+                    </p>
+                    <a href="Projects/Project2/index.html" target="_blank" class="ticket-btn">View Project →</a>
+                </div>
             </div>
 
-            <div class="project-card">
-
-                <h3>Safe-less in Seattle</h3>
-
-                <p>
-                    An interactive data journalism project examining arrest
-                    patterns across Seattle from 2019–2025. Using census tract
-                    analysis, GIS mapping, and transit accessibility data, the
-                    project explores where arrests occur, how they change over
-                    time, and how location influences public safety trends.
-                </p>
-
-                <a href="Projects/Safe Less Seattle/safelessSeattle.html" target="_blank">
-                    View Project
-                </a>
-
+            <div class="poster-card reveal">
+                <div class="poster-sprockets"></div>
+                <div class="poster-card-inner">
+                    <p class="poster-meta">Feature · GIS &amp; Mapping</p>
+                    <h3>Safe-less in Seattle</h3>
+                    <p>
+                        An interactive data journalism project examining arrest
+                        patterns across Seattle from 2019–2025. Using census tract
+                        analysis, GIS mapping, and transit accessibility data, the
+                        project explores where arrests occur, how they change over
+                        time, and how location influences public safety trends.
+                    </p>
+                    <a href="Projects/Safe Less Seattle/safelessSeattle.html" target="_blank" class="ticket-btn">View
+                        Project →</a>
+                </div>
             </div>
 
-
-            <div class="project-card">
-
-                <h3>Six Weeks at Freddy's</h3>
-
-                <p>
-                    A workplace engagement and performance analytics
-                    project that used gamification and visualization
-                    principles to improve crew engagement and support
-                    UPT goals at AMC Theatres.
-                </p>
-
-                <a href="Projects/Work/fnaf.html" target="_blank">
-                    View Case Study
-                </a>
-
+            <div class="poster-card reveal">
+                <div class="poster-sprockets"></div>
+                <div class="poster-card-inner">
+                    <p class="poster-meta">Case Study · Operations</p>
+                    <h3>Six Weeks at Freddy's</h3>
+                    <p>
+                        A workplace engagement and performance analytics
+                        project that used gamification and visualization
+                        principles to improve crew engagement and support
+                        UPT goals at AMC Theatres.
+                    </p>
+                    <a href="Projects/Work/fnaf.html" target="_blank" class="ticket-btn">View Case Study →</a>
+                </div>
             </div>
 
         </div>
@@ -412,8 +865,39 @@
     </section>
 
     <footer>
-        © 2026 Ebony Lopez
+        <div class="bulb-row" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="copyright">© 2026 Ebony Lopez</p>
+        <p class="tagline">Data Visualization · Operations Leadership</p>
     </footer>
+
+    <script>
+        // sticky nav background on scroll
+        const nav = document.getElementById('siteNav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 40);
+        });
+
+        // scroll-reveal for cards and section heads
+        const revealEls = document.querySelectorAll('.reveal');
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (prefersReduced || !('IntersectionObserver' in window)) {
+            revealEls.forEach(el => el.classList.add('in-view'));
+        } else {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            revealEls.forEach(el => observer.observe(el));
+        }
+    </script>
 
 </body>
 
